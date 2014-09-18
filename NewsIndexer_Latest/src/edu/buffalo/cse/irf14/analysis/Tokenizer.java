@@ -44,6 +44,8 @@ public class Tokenizer {
 	 * tokenization
 	 */
 	public TokenStream consume(String str) throws TokenizerException {
+		if(str == null || str == "")
+			throw new TokenizerException("Invalid string passed for tokenization");
 		List<Token> tokens = new ArrayList<Token>();
 		String[] terms = str.split(delimiter);
 		for (String term : terms) {
