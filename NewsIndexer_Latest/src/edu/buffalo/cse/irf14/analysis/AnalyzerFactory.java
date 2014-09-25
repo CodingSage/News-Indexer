@@ -3,6 +3,8 @@
  */
 package edu.buffalo.cse.irf14.analysis;
 
+import java.util.ArrayList;
+
 import edu.buffalo.cse.irf14.document.FieldNames;
 
 /**
@@ -44,7 +46,26 @@ public class AnalyzerFactory {
 	 * null otherwise
 	 */
 	public Analyzer getAnalyzerForField(FieldNames name, TokenStream stream) {
-		//TODO : YOU NEED TO IMPLEMENT THIS METHOD
+		if(name == FieldNames.AUTHOR)
+			return new FilterChain(stream, new ArrayList<TokenFilterType>(){{add(TokenFilterType.NUMERIC);add(TokenFilterType.SPECIALCHARS);}});
+		if(name == FieldNames.AUTHORORG)
+			return new FilterChain(stream, new ArrayList<TokenFilterType>(){{add(TokenFilterType.NUMERIC);add(TokenFilterType.SPECIALCHARS);}});
+		if(name == FieldNames.CATEGORY)
+			return new FilterChain(stream, new ArrayList<TokenFilterType>(){{add(TokenFilterType.NUMERIC);add(TokenFilterType.SPECIALCHARS);}});
+		if(name == FieldNames.FILEID)
+			return new FilterChain(stream, new ArrayList<TokenFilterType>(){{add(TokenFilterType.NUMERIC);add(TokenFilterType.SPECIALCHARS);}});
+		if(name == FieldNames.NEWSDATE)
+			return new FilterChain(stream, new ArrayList<TokenFilterType>(){{add(TokenFilterType.NUMERIC);add(TokenFilterType.SPECIALCHARS);}});
+		if(name == FieldNames.PLACE)
+			return new FilterChain(stream, new ArrayList<TokenFilterType>(){{add(TokenFilterType.NUMERIC);add(TokenFilterType.SPECIALCHARS);}});
+		if(name == FieldNames.TITLE)
+			return new FilterChain(stream, new ArrayList<TokenFilterType>(){{add(TokenFilterType.NUMERIC);add(TokenFilterType.SPECIALCHARS);}});
+		if(name == FieldNames.CONTENT)
+			return new FilterChain(stream, new ArrayList<TokenFilterType>(){{
+				add(TokenFilterType.NUMERIC);add(TokenFilterType.SPECIALCHARS);
+				add(TokenFilterType.CAPITALIZATION);add(TokenFilterType.DATE);
+				add(TokenFilterType.ACCENT);add(TokenFilterType.STEMMER);
+				add(TokenFilterType.STOPWORD);add(TokenFilterType.SYMBOL);}});		
 		return null;
 	}
 }
