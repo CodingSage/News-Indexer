@@ -81,7 +81,7 @@ public class IndexWriter {
 
 	private String delimiterMap(FieldNames field) {
 		if (field == FieldNames.AUTHOR)
-			return "";
-		return "";
+			return " ";
+		return " ";
 	}
 }
