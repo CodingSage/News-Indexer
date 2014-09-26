@@ -116,4 +116,43 @@ public class TokenStream implements Iterator<Token>{
 		return tokens.get(index);
 	}
 	
+	public Token getNext(){
+		if(index + 1 < tokens.size())
+			return tokens.get(index+1);
+		return null;
+	}
+	
+	public Token getRest(){
+		int tempIndex=index;
+		Token returnToken=new Token();
+		if(tempIndex+1 < tokens.size())
+		{
+			tempIndex++;
+			while(tempIndex<tokens.size())
+			{
+				returnToken.merge(tokens.get(tempIndex));
+				tempIndex++;
+			}
+			return returnToken;
+		}
+		return null;
+	}
+	
+	public Token getNextToNext(){
+
+		if(elementRemoved != -1){
+			index = elementRemoved;
+			elementRemoved = -1;
+		}
+		if(index + 2 < tokens.size())
+			return tokens.get(index+2);
+		return null;
+	}
+	
+	public Token getPrevious(){
+		if(index - 1 >-1)
+			return tokens.get(index-1);
+		return null;
+	}
+	
 }
