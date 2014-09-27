@@ -12,11 +12,11 @@ import edu.buffalo.cse.irf14.document.FieldNames;
  * This factory class is responsible for instantiating "chained" {@link Analyzer} instances
  */
 public class AnalyzerFactory {
-	
+
 	private static AnalyzerFactory instance;	
-	
+
 	private AnalyzerFactory(){}
-	
+
 	/**
 	 * Static method to return an instance of the factory class.
 	 * Usually factory classes are defined as singletons, i.e. 
@@ -33,7 +33,7 @@ public class AnalyzerFactory {
 			instance = new AnalyzerFactory();
 		return instance;
 	}
-	
+
 	/**
 	 * Returns a fully constructed and chained {@link Analyzer} instance
 	 * for a given {@link FieldNames} field
@@ -47,7 +47,7 @@ public class AnalyzerFactory {
 	 */
 	public Analyzer getAnalyzerForField(FieldNames name, TokenStream stream) {
 		if(name == FieldNames.AUTHOR)
-			return new FilterChain(stream, new ArrayList<TokenFilterType>(){{add(TokenFilterType.NUMERIC);add(TokenFilterType.SPECIALCHARS);}});
+			return new FilterChain(stream, new ArrayList<TokenFilterType>(){{add(TokenFilterType.SPECIALCHARS);add(TokenFilterType.NUMERIC);}});
 		if(name == FieldNames.AUTHORORG)
 			return new FilterChain(stream, new ArrayList<TokenFilterType>(){{add(TokenFilterType.NUMERIC);add(TokenFilterType.SPECIALCHARS);}});
 		if(name == FieldNames.CATEGORY)
@@ -55,17 +55,19 @@ public class AnalyzerFactory {
 		if(name == FieldNames.FILEID)
 			return new FilterChain(stream, new ArrayList<TokenFilterType>(){{add(TokenFilterType.NUMERIC);add(TokenFilterType.SPECIALCHARS);}});
 		if(name == FieldNames.NEWSDATE)
-			return new FilterChain(stream, new ArrayList<TokenFilterType>(){{add(TokenFilterType.NUMERIC);add(TokenFilterType.SPECIALCHARS);}});
+			return new FilterChain(stream, new ArrayList<TokenFilterType>(){{add(TokenFilterType.SPECIALCHARS);}});
 		if(name == FieldNames.PLACE)
 			return new FilterChain(stream, new ArrayList<TokenFilterType>(){{add(TokenFilterType.NUMERIC);add(TokenFilterType.SPECIALCHARS);}});
 		if(name == FieldNames.TITLE)
 			return new FilterChain(stream, new ArrayList<TokenFilterType>(){{add(TokenFilterType.NUMERIC);add(TokenFilterType.SPECIALCHARS);}});
 		if(name == FieldNames.CONTENT)
 			return new FilterChain(stream, new ArrayList<TokenFilterType>(){{
-				add(TokenFilterType.NUMERIC);add(TokenFilterType.SPECIALCHARS);
-				add(TokenFilterType.CAPITALIZATION);add(TokenFilterType.DATE);
-				add(TokenFilterType.ACCENT);add(TokenFilterType.STEMMER);
-				add(TokenFilterType.STOPWORD);add(TokenFilterType.SYMBOL);}});		
+				add(TokenFilterType.STOPWORD); add(TokenFilterType.CAPITALIZATION); 
+				add(TokenFilterType.SYMBOL); add(TokenFilterType.SPECIALCHARS);	
+				add(TokenFilterType.ACCENT);
+				add(TokenFilterType.DATE);		add(TokenFilterType.NUMERIC);
+				add(TokenFilterType.STEMMER);
+			}});		
 		return null;
 	}
 }

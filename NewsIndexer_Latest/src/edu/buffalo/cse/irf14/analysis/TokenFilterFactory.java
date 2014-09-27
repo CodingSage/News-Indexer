@@ -3,6 +3,8 @@
  */
 package edu.buffalo.cse.irf14.analysis;
 
+import edu.buffalo.cse.irf14.analysis.test.SymbolRuleTest;
+
 
 /**
  * Factory class for instantiating a given TokenFilter
@@ -41,8 +43,29 @@ public class TokenFilterFactory {
 	 */
 	public TokenFilter getFilterByType(TokenFilterType type, TokenStream stream) {
 		//TODO : YOU MUST IMPLEMENT THIS METHOD - factory
-		if (type == TokenFilterType.CAPITALIZATION) {
+		if (type == TokenFilterType.SPECIALCHARS) {
+			return new SpecialCharacterFilter(stream);
+		}
+		else if (type == TokenFilterType.SYMBOL) {
+			return new SymbolFilter(stream);
+		}
+		else if (type == TokenFilterType.STOPWORD) {
+			return new StopWordFilter(stream);
+		}
+		else if (type == TokenFilterType.ACCENT) {
+			return new AccentFilter(stream);
+		}
+		else if (type == TokenFilterType.DATE) {
+			return new DateFilter(stream);
+		}
+		else if (type == TokenFilterType.NUMERIC) {
+			return new NumberFilter(stream);
+		}
+		else if (type == TokenFilterType.CAPITALIZATION) {
 			return new CapitalizationFilter(stream);
+		}
+		else if (type == TokenFilterType.STEMMER) {
+			return new StemmerFilter(stream);
 		}
 		return null;
 	}

@@ -19,17 +19,17 @@ public class TokenStream implements Iterator<Token>{
 	private List<Token> tokens;
 	private int index;
 	private int elementRemoved;
-	
+
 	public TokenStream() {		
 		index = elementRemoved = -1;
 		tokens = new ArrayList<Token>();
 	}
-	
+
 	public TokenStream(Collection<Token> tokenList) {
 		index = elementRemoved = -1;
 		tokens = new ArrayList<Token>(tokenList);
 	}
-	
+
 	/**
 	 * Method that checks if there is any Token left in the stream
 	 * with regards to the current pointer.
@@ -59,7 +59,7 @@ public class TokenStream implements Iterator<Token>{
 			return null;
 		return tokens.get(index);
 	}
-	
+
 	/**
 	 * Method to remove the current Token from the stream.
 	 * Note that "current" token refers to the Token just returned
@@ -74,7 +74,7 @@ public class TokenStream implements Iterator<Token>{
 		elementRemoved = index;
 		index = -1;
 	}
-	
+
 	/**
 	 * Method to reset the stream to bring the iterator back to the beginning
 	 * of the stream. Unless the stream has no tokens, hasNext() after calling
@@ -83,7 +83,7 @@ public class TokenStream implements Iterator<Token>{
 	public void reset() {
 		index = -1;
 	}
-	
+
 	/**
 	 * Method to append the given TokenStream to the end of the current stream
 	 * The append must always occur at the end irrespective of where the iterator
@@ -101,7 +101,7 @@ public class TokenStream implements Iterator<Token>{
 			tokens.add(stream.next());	
 		}
 	}
-	
+
 	/**
 	 * Method to get the current Token from the stream without iteration.
 	 * The only difference between this method and {@link TokenStream#next()} is that
@@ -115,5 +115,56 @@ public class TokenStream implements Iterator<Token>{
 			return null;
 		return tokens.get(index);
 	}
-	
+
+	public Token getNext(){
+		if(elementRemoved != -1){
+			index = elementRemoved;
+			elementRemoved = -1;
+		}
+		if(index + 1 < tokens.size())
+			return tokens.get(index+1);
+		return null;
+
+	}
+
+	public Token getRest(){
+		int tempIndex=index;
+		Token returnToken=new Token();
+		if(tempIndex+1 < tokens.size())
+		{
+			tempIndex++;
+			while(tempIndex<tokens.size())
+			{
+				returnToken.merge(tokens.get(tempIndex));
+				tempIndex++;
+			}
+			return returnToken;
+		}
+		return null;
+	}
+
+	public Token getNextToNext(){
+
+		if(elementRemoved != -1){
+			index = elementRemoved;
+			elementRemoved = -1;
+		}
+		if(index + 2 < tokens.size())
+			return tokens.get(index+2);
+		return null;
+	}
+
+
+	public Token getPrevious(){
+		if(index - 1 >-1)
+			return tokens.get(index-1);
+		return null;
+	}
+
+	public void removeNext() {
+		//System.out.println("Token being removed is : "+tokens.get(index+1));
+		tokens.remove(index+1);
+		
+	}
+
 }

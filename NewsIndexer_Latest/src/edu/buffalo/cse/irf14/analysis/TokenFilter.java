@@ -24,7 +24,7 @@ public abstract class TokenFilter implements Analyzer {
 		this.stream = stream;
 	}
 
-	public boolean evaluateCurrent() {
+	public boolean evaluateCurrent() throws TokenizerException {
 		return false;		
 	}
 }

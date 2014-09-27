@@ -44,14 +44,24 @@ public class Tokenizer {
 	 * tokenization
 	 */
 	public TokenStream consume(String str) throws TokenizerException {
-		if(str == null || str == "")
-			throw new TokenizerException("Invalid string passed for tokenization");
 		List<Token> tokens = new ArrayList<Token>();
-		String[] terms = str.split(delimiter);
-		for (String term : terms) {
-			Token token = new Token(term);
-			tokens.add(token);
+		try
+		{
+			if(str == null || str.equals(""))
+				throw new TokenizerException("Invalid string passed for tokenization");
+			
+			String[] terms = str.split(delimiter);
+			for (String term : terms) {
+				Token token = new Token(term);
+				tokens.add(token);
+			}
+			
+		}
+		catch(TokenizerException e)
+		{
+			//System.out.println("Author/AuthorName not found.");
 		}
 		return new TokenStream(tokens);
+		
 	}
 }

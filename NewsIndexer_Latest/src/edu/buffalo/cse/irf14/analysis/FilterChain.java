@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.hamcrest.core.IsInstanceOf;
+
 public class FilterChain implements Analyzer {
 	
 	private TokenStream stream;
@@ -23,7 +25,7 @@ public class FilterChain implements Analyzer {
 		for (TokenFilter tokenFilter : filters) {
 			if(filters.indexOf(tokenFilter) == 0 && tokenFilter.getStream().hasNext())
 				tokenFilter.increment();
-			else
+			else 
 				tokenFilter.evaluateCurrent();
 		}
 		return stream.hasNext();
