@@ -16,6 +16,7 @@ import java.util.regex.Pattern;
  * Class that parses a given file into a Document
  */
 public class Parser {
+	
 	/**
 	 * Static method to parse the given file into the Document object
 	 * @param filename : The fully qualified filename to be parsed
@@ -24,17 +25,21 @@ public class Parser {
 	 */
 	public static Document parse(String filename) throws ParserException {
 		// TODO YOU MUST IMPLEMENT THIS
-		Document document = new Document();
-		try
-		{
-		
+		System.out.println("Filename : "+filename);
+		File article=null;
 		if (filename == null)
 			throw new ParserException();
 		if (filename.equals(""))
 			throw new ParserException();
-		File article = new File(filename);
+		/*if(!filename.matches("//d//d//d//d//d//d//d"))
+			throw new ParserException();*/
+		article = new File(filename);
 		if (!article.exists())
 			throw new ParserException();
+		
+		Document document = new Document();
+		try
+		{
 		BufferedReader articleReader = null;
 		try {
 			articleReader = new BufferedReader(new FileReader(article));
@@ -203,7 +208,7 @@ public class Parser {
 		 */
 
 
-		/* System.out.println("**********DONE PROCESSING**********");
+		 System.out.println("**********DONE PROCESSING**********");
 		 System.out.println("FILENAME : "+filename);
 		 System.out.println("FILEID : "+fileid);
 		 System.out.println("CATEGORY : "+category);
@@ -212,7 +217,7 @@ public class Parser {
 		 System.out.println("AUTHOR COMPANY : "+authorOrg);
 		 System.out.println("PLACE : "+place.trim());
 		 System.out.println("DATE : "+date);
-		 System.out.println("Contents : \n"+contents);*/
+		 System.out.println("Contents : \n"+contents);
 
 		String content = contents.toString();
 
@@ -226,9 +231,10 @@ public class Parser {
 		document.setField(FieldNames.CONTENT, content);
 		return document;
 		
-		}catch(Exception e)
+		}
+		catch(Exception e)
 		{
-		e.printStackTrace();	
+				
 		}
 		return document;
 	}
