@@ -9,15 +9,38 @@ public class NumberFilter extends TokenFilter {
 	@Override
 	public boolean increment() throws TokenizerException {
 		Token token = stream.next();
-		return analyse(token);
+		try
+		{
+			if(token == null)
+				throw new TokenizerException("Invalid token in analyse method in NumberFilter");
+			return analyse(token);
+		}catch(TokenizerException e){
+			//System.out.println("Null token in NumberFilter");
+		}
+		if (stream.hasNext())
+			return true;
+		return false;
 	}
 	
-	public boolean current() throws TokenizerException{
+	public boolean evaluateCurrent() throws TokenizerException{
+	//	System.out.println("Evaluate Current : NumberFilter");
 		Token token = stream.getCurrent();
-		return analyse(token);
+		try
+		{
+			if(token == null)
+				throw new TokenizerException("Invalid token in analyse method in NumberFilter");
+			return analyse(token);
+		}catch(TokenizerException e){
+			//System.out.println("Null token in NumberFilter");
+		}
+		if (stream.hasNext())
+			return true;
+		return false;
+		
 	}
 
-	private boolean analyse(Token token) {
+	private boolean analyse(Token token) throws TokenizerException {
+		
 		String termText = token.getTermText();
 		if (isNumber(termText)) {
 			termText = termText.replaceAll("[0-9,.]", "");

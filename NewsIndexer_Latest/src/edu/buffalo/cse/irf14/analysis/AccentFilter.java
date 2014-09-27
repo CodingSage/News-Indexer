@@ -1,3 +1,4 @@
+
 package edu.buffalo.cse.irf14.analysis;
 
 import java.text.Normalizer;
@@ -13,13 +14,43 @@ public class AccentFilter extends TokenFilter {
 	public boolean increment() throws TokenizerException {
 		// TODO Auto-generated method stub
 		Token token=stream.next();
+		try
+		{
+			if(token == null)
+				throw new TokenizerException("Invalid token in analyse method in AccentFilter");
+			return analyse(token);
+		}catch(TokenizerException e)
+		{//System.out.println("Null token in AccentFilter");
+		}
+		
+		if(stream.hasNext())	
+			return true;
+		else
+			return false;
+	}
+	
+	public boolean evaluateCurrent() throws TokenizerException{
+		Token token = stream.getCurrent();
+		try
+		{
+			if(token == null)
+				throw new TokenizerException("Invalid token in analyse method in AccentFilter");
+			return analyse(token);
+		}catch(TokenizerException e)
+		{//System.out.println("Null token in AccentFilter");
+		}
+		if(stream.hasNext())	
+			return true;
+		else
+			return false;
+		
+	}
+
+	private boolean analyse(Token token) throws TokenizerException {
+	
 		String termText=token.getTermText();
-		/*String modifiedToken=Normalizer.normalize(termText, Normalizer.Form.NFD);
-		modifiedToken= modifiedToken.replaceAll("[^\\p{ASCII}]", "");
-		System.out.println(modifiedToken);*/
 		termText=Normalizer.normalize(termText, Normalizer.Form.NFD);
 		termText= termText.replaceAll("[^\\p{ASCII}]", "");
-		System.out.println(termText);
 		token.setTermText(termText);
 		
 		if(stream.hasNext())	

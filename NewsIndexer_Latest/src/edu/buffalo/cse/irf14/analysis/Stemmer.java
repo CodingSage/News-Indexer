@@ -394,23 +394,21 @@ class Stemmer
                           /* to test getResultBuffer(), getResultLength() : */
                           /* u = new String(s.getResultBuffer(), 0, s.getResultLength()); */
 
-                          System.out.print(u);
                        }
                        break;
                     }
                  }
               }
               if (ch < 0) break;
-              System.out.print((char)ch);
            }
          }
          catch (IOException e)
-         {  System.out.println("error reading " + args[i]);
+         {  //System.out.println("error reading " + args[i]);
             break;
          }
       }
       catch (FileNotFoundException e)
-      {  System.out.println("file " + args[i] + " not found");
+      {  //System.out.println("file " + args[i] + " not found");
          break;
       }
    }

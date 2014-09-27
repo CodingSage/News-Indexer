@@ -13,8 +13,42 @@ public class StemmerFilter extends TokenFilter {
 	@Override
 	public boolean increment() throws TokenizerException {
 		// TODO Auto-generated method stub
-		Token token=new Token();
-		token=stream.next();
+		Token token=stream.next();
+		try
+		{
+			if(token == null)
+				throw new TokenizerException("Invalid token in analyse method in StemmerFilter");
+			return analyse(token);
+		}catch(TokenizerException e)
+		{
+			//System.out.println("NUll token in StemmerFilter");
+		}
+		if(stream.hasNext())
+			return true;
+		else
+			return false;
+	}
+
+	public boolean evaluateCurrent() throws TokenizerException{
+		//System.out.println("Evaluate Current : StemmerFilter");
+		Token token = stream.getCurrent();
+		try
+		{
+			if(token == null)
+				throw new TokenizerException("Invalid token in analyse method in StemmerFilter");
+			return analyse(token);
+		}catch(TokenizerException e)
+		{
+			//System.out.println("NUll token in StemmerFilter");
+		}
+		if(stream.hasNext())
+			return true;
+		else
+			return false;
+
+	}
+
+	private boolean analyse(Token token) throws TokenizerException {
 		String termText=token.getTermText();
 		Pattern p=Pattern.compile("^[A-Za-z]");
 		Matcher m=p.matcher(termText);
@@ -24,33 +58,12 @@ public class StemmerFilter extends TokenFilter {
 			String modifiedTerm=s.externalStem();
 			token.setTermText(modifiedTerm);
 		}
-		
-		
-		/*if(Character.isAlphabetic(termText.charAt(0))){
-			termText=termText.replaceFirst("ness$", "");
-			termText=termText.replaceFirst("ies$", "i");
-			termText=termText.replaceFirst("s$", "");
-			termText=termText.replaceFirst("eed$", "e");
-			termText=termText.replaceFirst("ed$", "");
-			termText=termText.replaceFirst("ted$", "t");
-			termText=termText.replaceFirst("ing$", "");
-			termText=termText.replaceFirst("y$", "i");
-			termText=termText.replaceFirst("ional$", "");
-			termText=termText.replaceFirst("ator$", "");
-			termText=termText.replaceFirst("pic$", "p");
-			termText=termText.replaceFirst("ement$", "");
-			termText=termText.replaceFirst("ent$", "");
-			termText=termText.replaceFirst("ness$", "");
-			
-			System.out.println("Modfied token : "+termText);
-			token.setTermText(termText);
-		}*/
-		
 		if(stream.hasNext())
 			return true;
 		else
 			return false;
 	}
+
 
 	@Override
 	public TokenStream getStream() {

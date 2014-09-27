@@ -44,10 +44,12 @@ public class IndexWriter {
 	 */
 	public void addDocument(Document d) throws IndexerException {
 		for (FieldNames field : FieldNames.values()) {
+			//System.out.println("Fieldname : "+field);
 			String[] values = d.getField(field);
 			String delimiter = delimiterMap(field);
 			Tokenizer tokenizer = new Tokenizer(delimiter);
 			for (String value : values) {
+				//System.out.println("Value : "+value);
 				try {
 					TokenStream stream = tokenizer.consume(value);
 					Analyzer analyzer = AnalyzerFactory.getInstance().getAnalyzerForField(field, stream);
@@ -55,10 +57,15 @@ public class IndexWriter {
 					}
 					TokenStream filteredStream = analyzer.getStream();
 					filteredStream.reset();
+					/*System.out.println("*************************FILTERED STREAM********************");
+					while(filteredStream.hasNext())
+					{
+						System.out.println(filteredStream.next().toString());
+					}*/
 					// index the stream
 					
 				} catch (TokenizerException e) {
-					e.printStackTrace();
+					//e.printStackTrace();
 				}
 			}
 		}

@@ -19,30 +19,101 @@ public class StopWordFilter extends TokenFilter{
 
 	@Override
 	public boolean increment() throws TokenizerException {
-		// TODO Auto-generated method stub
-
-		Pattern p = Pattern.compile(stopWordPattern, Pattern.CASE_INSENSITIVE);
-		Matcher m = null;
-		boolean b = false;
-		Token token=new Token();
-		String termText=new String();
-		token=stream.next();
-		termText=token.getTermText();
-		System.out.println("Token is : "+termText);
-		m=p.matcher(termText);
-		if(m.find())
+		Token token=stream.next();
+		try
 		{
-			stream.remove();
-		}
+			if(token == null)
+				throw new TokenizerException("Invalid token in analyse method in StopwordFilter");
+			return analyse(token);
+		}catch(TokenizerException e)
+		{//System.out.println("Null token in StopWordFilter");
+			}
+		
+
 		if(stream.hasNext())
 			return true;
 		else
 			return false;
 	}
 
+
+	public boolean evaluateCurrent() throws TokenizerException{
+	//	System.out.println("Evaluate Current : StopWordFilter");
+		Token token = stream.next();
+		try
+		{
+			if(token == null)
+				throw new TokenizerException("Invalid token in analyse method in StopwordFilter");
+			return analyse(token);
+		}catch(TokenizerException e)
+		{//System.out.println("Null token in StopWordFilter");
+		}
+
+		if(stream.hasNext())
+			return true;
+		return false;
+	}
+
+	private boolean analyse(Token token) throws TokenizerException {
+
+		Pattern p = Pattern.compile(stopWordPattern, Pattern.CASE_INSENSITIVE);
+		Matcher m = null;
+		boolean b = false;
+		String termText=token.getTermText();
+		termText=termText.replaceAll("[^A-Za-z0-9]", "");
+		if(termText.equalsIgnoreCase("may"))
+		{
+			if(isDate(termText))
+			{
+				if(stream.hasNext())
+					return true;
+				return false;
+			}
+		}
+		m=p.matcher(termText);
+		if(m.find())
+			stream.remove();
+		if(stream.hasNext())
+			return true;
+		return false;
+	}
+	private boolean isDate(String termText) {
+		Token previousToken=stream.getPrevious();
+		Token nextToken=stream.getNext();
+		try
+		{
+			if(previousToken==null || nextToken==null)
+				throw new TokenizerException("Found a null token");
+			
+			if(isNumber(previousToken.toString()) || isNumber(nextToken.toString()))
+			{
+				return true;
+			}
+			return false;
+		}
+		catch(TokenizerException e)
+		{
+			
+		}
+		return false;
+		
+	}
+	
+	private boolean isNumber(String token) {
+		if(token.equals("") || token.equals(" "))
+			return false;
+		token=token.replaceAll("[.,?]", "");
+		boolean flag = true;
+		for (int i = 0; i < token.length(); i++) {
+			if (!Character.isDigit(token.charAt(i)))
+				flag = false;
+		}
+
+		return flag;
+	}
+
 	@Override
 	public TokenStream getStream() {
-		// TODO Auto-generated method stub
 		return stream;
 	}
 

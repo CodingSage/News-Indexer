@@ -12,15 +12,45 @@ public class SpecialCharacterFilter extends TokenFilter{
 
 	@Override
 	public boolean increment() throws TokenizerException {
-		// TODO Auto-generated method stub
+		Token token=stream.next();
+		try
+		{
+			if(token == null)
+				throw new TokenizerException("Invalid token in analyse method in SpecialCharacterFilter");
+			return analyse(token);
+		}
+		catch(TokenizerException e)
+		{//System.out.println("Null token in SpecialCharacterFilter");
+		}
+		if(stream.hasNext())
+			return true;
+		else
+			return false;
+	}	
+	
+	public boolean evaluateCurrent() throws TokenizerException{
+		//System.out.println("Evaluate Current : SpecialCharacterFilter");
+		Token token = stream.getCurrent();
+		try
+		{
+			if(token == null)
+				throw new TokenizerException("Invalid token in analyse method in SpecialCharacterFilter");
+			return analyse(token);
+		}
+		catch(TokenizerException e)
+		{//System.out.println("Null token in SpecialCharacterFilter");
+		}
+		if(stream.hasNext())
+			return true;
+		else
+			return false;
+		
+	}
+
+	private boolean analyse(Token token) throws TokenizerException {
+		String termText=token.getTermText();
 		Pattern p = Pattern.compile("[^a-zA-Z0-9{.}{!}{,}{?}{\\-} ]", Pattern.CASE_INSENSITIVE);
 		Matcher m = null;
-		Token token=new Token();
-		String termText=new String();
-
-		token=stream.next();
-		termText=token.getTermText();
-
 		m = p.matcher(termText);
 		if (m.find())
 		{
@@ -28,14 +58,18 @@ public class SpecialCharacterFilter extends TokenFilter{
 			termText=termText.trim();
 			if(termText.contains("-"))
 			{
-				System.out.println("Found -");
 				int position=termText.indexOf("-");
-				char chBefore=termText.charAt(position-1);
-				char chAfter=termText.charAt(position+1);
-				if(Character.isDigit(chBefore) && Character.isDigit(chAfter))
-				{}
-				else //if(Character.isAlphabetic(chBefore) && Character.isAlphabetic(chAfter))
-					termText=termText.replace("-", "");
+				if(position!=0 && position!=termText.length()-1)
+				{
+					char chBefore=termText.charAt(position-1);
+					char chAfter=termText.charAt(position+1);
+					if(Character.isDigit(chBefore) && Character.isDigit(chAfter))
+					{}
+					else //if(Character.isAlphabetic(chBefore) && Character.isAlphabetic(chAfter))
+						termText=termText.replace("-", "");
+				}
+				else
+					termText=termText.replace("-", "");				
 			}
 			//eliminateSpaces(termText);
 			termText=termText.replaceAll(" ", "");
@@ -45,7 +79,7 @@ public class SpecialCharacterFilter extends TokenFilter{
 			return true;
 		else
 			return false;
-	}	
+	}
 
 	@Override
 	public TokenStream getStream() {
