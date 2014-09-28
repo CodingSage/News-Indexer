@@ -1,3 +1,4 @@
+
 package edu.buffalo.cse.irf14.analysis;
 
 public class CapitalizationFilter extends TokenFilter {
@@ -9,93 +10,46 @@ public class CapitalizationFilter extends TokenFilter {
 	@Override
 	public boolean increment() throws TokenizerException {
 		// TODO check beginning of sentence condition
-		Token token = stream.next();
-		try
-		{
-			if(token == null)
-				throw new TokenizerException("Invalid token in analyse method in CapitalizationFilter");
-			return analyse(token);
-		}catch(TokenizerException e)
-		{//System.out.println("Null token in CapitalizationFilter");
-			}
-		
-		if(stream.hasNext())
-			return true;
-		else
-			return false;
+		return analyse(stream.next());	
 	}
 
 	@Override
 	public boolean evaluateCurrent() throws TokenizerException{
-		//System.out.println("Evaluate Current : CapitalizationFilter");
-		Token token = stream.getCurrent();
-		try
-		{
-			if(token == null)
-				throw new TokenizerException("Invalid token in analyse method in CapitalizationFilter");
-			return analyse(token);
-		}catch(TokenizerException e)
-		{//System.out.println("Null token in CapitalizationFilter");
-		}
-		if(stream.hasNext())
-			return true;
-		else
-			return false;
+		return analyse(stream.getCurrent());	
 	}
 
 	private boolean analyse(Token token) throws TokenizerException {
-			String term=token.getTermText();
-			if(isAllSmall(term))
+		String term=token.getTermText();
+		if(isAllSmall(term))
+			return stream.hasNext();
+		else if(term.toUpperCase().equals(term))
+			return stream.hasNext();
+		else if(isFirstWord() && !isNextCapital())
+		{
+			term=term.toLowerCase();
+			token.setTermText(term);
+			return stream.hasNext();
+		}
+		else 
+		{
+			if(term.charAt(term.length()-1)!='.' && term.charAt(term.length()-1)!=',' && term.charAt(term.length()-1)!='!')
 			{
-				if(stream.hasNext())
-					return true;
-				else
-					return false;
-			}
-
-			else if(token.toString().toUpperCase().equals(token.toString()))
-			{
-				//return true;
-				if(stream.hasNext())
-					return true;
-				else
-					return false;
-			}
-			else if(isFirstWord(token, stream) && !isNextCapital(token,stream))
-			{
-				term=term.toLowerCase();
-				token.setTermText(term);
-				//return true;
-				if(stream.hasNext())
-					return true;
-				else
-					return false;
-			}
-
-			else 
-			{
-				if(term.charAt(term.length()-1)!='.' && term.charAt(term.length()-1)!=',' && term.charAt(term.length()-1)!='!')
+				Token nextToken = null;
+				while(isNextCapital())
 				{
-					Token nextToken = stream.getNext();
-					while(isNextCapital(token, stream))
-					{
-						nextToken=stream.getNext();
-						token.merge(nextToken);
-						stream.removeNext();
-						term=token.getTermText();
-						if(term.charAt(term.length()-1)=='.' || term.charAt(term.length()-1)==',' ||term.charAt(term.length()-1)=='!')
-							break;
-					}
+					nextToken=stream.getNext();
+					token.merge(nextToken);
+					stream.removeNext();
+					term=token.getTermText();
+					if(term.charAt(term.length()-1)=='.' || term.charAt(term.length()-1)==',' ||term.charAt(term.length()-1)=='!')
+						break;
 				}
 			}
-			if(stream.hasNext())
-				return true;
-			else
-				return false;
-
+		}
+		return stream.hasNext();
 	}
 
-	private boolean isNextCapital(Token token, TokenStream stream) {
+	private boolean isNextCapital() {
 		Token nextToken=stream.getNext();
 		if(nextToken==null)
 			return false;
@@ -113,8 +67,8 @@ public class CapitalizationFilter extends TokenFilter {
 		return stream;
 	}
 
-	private boolean toLowerCase(Token token){
-		if (/*isFirstWord(token, stream) &&*/ !isUpperCaseWord(token)) {
+	/*private boolean toLowerCase(Token token){
+		if (isFirstWord(token, stream) && !isUpperCaseWord(token)) {
 			token.setTermText(token.toString());
 			return true;
 		}
@@ -131,7 +85,7 @@ public class CapitalizationFilter extends TokenFilter {
 		if (startChar <= 'Z' && startChar >= 'A')
 			return true;
 		return false;
-	}
+	}*/
 	private boolean isAllSmall(String term)
 	{
 		boolean flag=true;
@@ -142,18 +96,19 @@ public class CapitalizationFilter extends TokenFilter {
 		}
 		return flag;
 	}
-	private boolean isFirstWord(Token token, TokenStream stream) {
+	private boolean isFirstWord() {
 		//System.out.println("Complex expression is : "+stream.toString().split(" ")[0].toString());
 		Token previousToken=stream.getPrevious();
 		if(previousToken!=null)
 		{
-			if(previousToken.toString().charAt(previousToken.toString().length()-1)=='.')
-				return true;
-			else
-				return false;
+			if(!previousToken.toString().equals("")){
+				if(previousToken.toString().charAt(previousToken.toString().length()-1)=='.')
+					return true;
+				return false;	
+			}
+
 		}
-		else
-			return true;
+		return true;
 	}
 
 }

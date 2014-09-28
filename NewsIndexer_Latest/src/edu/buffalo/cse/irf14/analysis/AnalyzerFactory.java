@@ -62,11 +62,14 @@ public class AnalyzerFactory {
 			return new FilterChain(stream, new ArrayList<TokenFilterType>(){{add(TokenFilterType.NUMERIC);add(TokenFilterType.SPECIALCHARS);}});
 		if(name == FieldNames.CONTENT)
 			return new FilterChain(stream, new ArrayList<TokenFilterType>(){{
-				add(TokenFilterType.STOPWORD); add(TokenFilterType.CAPITALIZATION); 
-				add(TokenFilterType.SYMBOL); add(TokenFilterType.SPECIALCHARS);	
+				add(TokenFilterType.STOPWORD);
+				add(TokenFilterType.SYMBOL);
+				add(TokenFilterType.CAPITALIZATION);
+				add(TokenFilterType.SPECIALCHARS);	
 				add(TokenFilterType.ACCENT);
-				add(TokenFilterType.DATE);		add(TokenFilterType.NUMERIC);
-				add(TokenFilterType.STEMMER);
+				add(TokenFilterType.DATE);		
+				add(TokenFilterType.NUMERIC);
+				//add(TokenFilterType.STEMMER);
 			}});		
 		return null;
 	}

@@ -4,10 +4,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class SpecialCharacterFilter extends TokenFilter{
-
+	public final static Pattern p = Pattern.compile("[^a-zA-Z0-9{.}{!}{,}{?}{\\-} ]", Pattern.CASE_INSENSITIVE);
 	public SpecialCharacterFilter(TokenStream stream) {
 		super(stream);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
@@ -16,40 +15,34 @@ public class SpecialCharacterFilter extends TokenFilter{
 		try
 		{
 			if(token == null)
-				throw new TokenizerException("Invalid token in analyse method in SpecialCharacterFilter");
-			return analyse(token);
+				throw new TokenizerException();
+			return analyse(token);	
+		}catch(TokenizerException e)
+		{
+			//System.out.println("CapitalFilter");
 		}
-		catch(TokenizerException e)
-		{//System.out.println("Null token in SpecialCharacterFilter");
-		}
-		if(stream.hasNext())
-			return true;
-		else
-			return false;
+		
+		return stream.hasNext();
 	}	
-	
+
 	public boolean evaluateCurrent() throws TokenizerException{
-		//System.out.println("Evaluate Current : SpecialCharacterFilter");
-		Token token = stream.getCurrent();
+		Token token=stream.getCurrent();
 		try
 		{
 			if(token == null)
-				throw new TokenizerException("Invalid token in analyse method in SpecialCharacterFilter");
-			return analyse(token);
+				throw new TokenizerException();
+			return analyse(token);	
+		}catch(TokenizerException e)
+		{
+			//System.out.println("CapitalFilter");
 		}
-		catch(TokenizerException e)
-		{//System.out.println("Null token in SpecialCharacterFilter");
-		}
-		if(stream.hasNext())
-			return true;
-		else
-			return false;
 		
+		return stream.hasNext();
 	}
 
 	private boolean analyse(Token token) throws TokenizerException {
 		String termText=token.getTermText();
-		Pattern p = Pattern.compile("[^a-zA-Z0-9{.}{!}{,}{?}{\\-} ]", Pattern.CASE_INSENSITIVE);
+		//Pattern p = Pattern.compile("[^a-zA-Z0-9{.}{!}{,}{?}{\\-} ]", Pattern.CASE_INSENSITIVE);
 		Matcher m = null;
 		m = p.matcher(termText);
 		if (m.find())
@@ -75,16 +68,11 @@ public class SpecialCharacterFilter extends TokenFilter{
 			termText=termText.replaceAll(" ", "");
 			token.setTermText(termText);
 		}	
-		if(stream.hasNext())
-			return true;
-		else
-			return false;
+		return stream.hasNext();
 	}
 
 	@Override
 	public TokenStream getStream() {
-		// TODO Auto-generated method stub
 		return stream;
 	}
-
 }

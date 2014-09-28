@@ -7,15 +7,17 @@ import java.util.List;
 import org.hamcrest.core.IsInstanceOf;
 
 public class FilterChain implements Analyzer {
-	
+
 	private TokenStream stream;
 	private List<TokenFilter> filters;
-	
-	public FilterChain(TokenStream stream, Collection<TokenFilterType> filterTypes){
+
+	public FilterChain(TokenStream stream,
+			Collection<TokenFilterType> filterTypes) {
 		this.stream = stream;
 		this.filters = new ArrayList<TokenFilter>();
 		for (TokenFilterType filterType : filterTypes) {
-			TokenFilter filter = TokenFilterFactory.getInstance().getFilterByType(filterType, stream);
+			TokenFilter filter = TokenFilterFactory.getInstance()
+					.getFilterByType(filterType, stream);
 			filters.add(filter);
 		}
 	}
@@ -23,10 +25,15 @@ public class FilterChain implements Analyzer {
 	@Override
 	public boolean increment() throws TokenizerException {
 		for (TokenFilter tokenFilter : filters) {
-			if(filters.indexOf(tokenFilter) == 0 && tokenFilter.getStream().hasNext())
-				tokenFilter.increment();
-			else 
-				tokenFilter.evaluateCurrent();
+			//if (tokenFilter.getStream().hasNext()) {
+				if (filters.indexOf(tokenFilter) == 0 && tokenFilter.getStream().hasNext() && tokenFilter.getStream().getNext()!=null)
+					tokenFilter.increment();
+				else if(tokenFilter.getStream().getCurrent()==null)
+					break;
+				else
+					tokenFilter.evaluateCurrent();
+					
+			//}
 		}
 		return stream.hasNext();
 	}

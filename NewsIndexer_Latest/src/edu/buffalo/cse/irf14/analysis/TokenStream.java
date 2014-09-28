@@ -19,7 +19,6 @@ public class TokenStream implements Iterator<Token>{
 	private List<Token> tokens;
 	private int index;
 	private int elementRemoved;
-
 	public TokenStream() {		
 		index = elementRemoved = -1;
 		tokens = new ArrayList<Token>();
@@ -118,7 +117,7 @@ public class TokenStream implements Iterator<Token>{
 
 	public Token getNext(){
 		if(elementRemoved != -1){
-			index = elementRemoved;
+			index = elementRemoved-1;
 			elementRemoved = -1;
 		}
 		if(index + 1 < tokens.size())
@@ -164,7 +163,11 @@ public class TokenStream implements Iterator<Token>{
 	public void removeNext() {
 		//System.out.println("Token being removed is : "+tokens.get(index+1));
 		tokens.remove(index+1);
-		
+	}
+	
+	public int getCurrentPosition()
+	{
+		return index;
 	}
 
 }

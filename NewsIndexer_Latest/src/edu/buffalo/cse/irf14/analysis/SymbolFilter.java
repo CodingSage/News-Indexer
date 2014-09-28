@@ -6,6 +6,7 @@ public class SymbolFilter extends TokenFilter {
 		{"aren't","are not"},
 		{"can't","cannot"},	{"could've","could have"},{"coudn't","could not"},{"couldn't've","could not have"},
 		{"didn't","did not"},{"doesn't","does not"},{"don't","do not"},
+		{"'em","them"},
 		{"hadn't","had not"},{"hadn't've","had not have"},{"hasn't","has not"},{"haven't","have not"},{"he'd","he had"},{"he'd've","he would have"},{"he'll","he will"},{"he's","he is"},
 		{"how'd","how would"},{"how'll","how will"},{"how's","how is"},
 		{"I'd","I would"},{"I'd've","I would have"},{"I'll","I will"},{"I'm","I am"},{"I've","I have"},{"isn't","is not"},{"it'd","it would"},{"it'd've","it would have"},{"it'll","it will"},
@@ -31,45 +32,14 @@ public class SymbolFilter extends TokenFilter {
 
 	@Override
 	public boolean increment() throws TokenizerException {
-		Token token = stream.next();
-		try
-		{
-			if(token==null)
-				throw new TokenizerException("Null token in SymbolFilter");
-			return analyse(token);
-		}
-		catch(TokenizerException e)
-		{
-			//System.out.println("Null token in SymbolFilter");;
-		}
-		if(stream.hasNext())	
-			return true;
-		else
-			return false;			
+			return analyse(stream.next());	
 	}
 
 	public boolean evaluateCurrent() throws TokenizerException{
-		//System.out.println("Evaluate Current : SymbolFilter");
-		Token token = stream.getCurrent();
-		try
-		{
-			if(token==null)
-				throw new TokenizerException("Null token in SymbolFilter");
-			return analyse(token);
-		}
-		catch(TokenizerException e)
-		{
-			//System.out.println("Null token in SymbolFilter");;
-		}
-		if(stream.hasNext())	
-			return true;
-		else
-			return false;	
+			return analyse(stream.getCurrent());	
 	}
 
 	private boolean analyse(Token token) throws TokenizerException {
-		if(token == null)
-			throw new TokenizerException("Invalid token in analyse method in SymbolFilter");
 		String termText=token.getTermText();
 		if(termText.equals(" ") || termText.equals("") || termText.equals("\n"))
 			stream.remove(); 
@@ -78,9 +48,10 @@ public class SymbolFilter extends TokenFilter {
 			int count=termText.length() - termText.replace(".", "").length();
 			if(count==1)
 			{
+
 				if(termText.charAt(termText.length()-1) == '.')
 				{
-					termText=termText.replace("."," ");
+					termText=termText.replace(".","");
 					termText=termText.trim();
 					token.setTermText(termText);
 				}
@@ -102,13 +73,11 @@ public class SymbolFilter extends TokenFilter {
 				}
 			}
 		}
-
 		if(termText.contains(","))
 		{
 			termText=termText.replaceAll(",","");
 			token.setTermText(termText);
 		}
-
 		if(termText.contains("?"))
 		{
 			//boolean b=checkMiddle(termText);
@@ -123,7 +92,6 @@ public class SymbolFilter extends TokenFilter {
 				termText=termText.trim();
 				token.setTermText(termText);
 			}
-
 		}
 		if(termText.contains("!"))
 		{
@@ -133,7 +101,6 @@ public class SymbolFilter extends TokenFilter {
 				termText=termText.trim();
 				token.setTermText(termText);
 			}
-
 		}
 		if(termText.contains("-"))
 		{
@@ -162,7 +129,6 @@ public class SymbolFilter extends TokenFilter {
 					break;
 				}
 			}
-
 			if(isContraction)
 			{
 				boolean isCapital=false;
@@ -210,11 +176,7 @@ public class SymbolFilter extends TokenFilter {
 				token.setTermText(termText);
 			}
 		}
-		if(stream.hasNext())	
-			return true;
-		else
-			return false;
-
+		return stream.hasNext();
 
 	}
 
@@ -266,7 +228,7 @@ public class SymbolFilter extends TokenFilter {
 			if(Character.isAlphabetic(before) && Character.isAlphabetic(after))
 				b=false;
 		}
-		
+
 		//if(position==termText.length()-1)
 		//b=false;
 		return b;

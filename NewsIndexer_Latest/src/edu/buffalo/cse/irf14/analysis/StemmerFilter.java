@@ -7,7 +7,6 @@ public class StemmerFilter extends TokenFilter {
 	String pattern="";
 	public StemmerFilter(TokenStream stream) {
 		super(stream);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
@@ -17,36 +16,28 @@ public class StemmerFilter extends TokenFilter {
 		try
 		{
 			if(token == null)
-				throw new TokenizerException("Invalid token in analyse method in StemmerFilter");
-			return analyse(token);
+				throw new TokenizerException();
+			return analyse(token);	
 		}catch(TokenizerException e)
 		{
-			//System.out.println("NUll token in StemmerFilter");
+			//System.out.println("CapitalFilter");
 		}
-		if(stream.hasNext())
-			return true;
-		else
-			return false;
-	}
+		
+		return stream.hasNext();	}
 
 	public boolean evaluateCurrent() throws TokenizerException{
-		//System.out.println("Evaluate Current : StemmerFilter");
-		Token token = stream.getCurrent();
+		Token token=stream.getCurrent();
 		try
 		{
 			if(token == null)
-				throw new TokenizerException("Invalid token in analyse method in StemmerFilter");
-			return analyse(token);
+				throw new TokenizerException();
+			return analyse(token);	
 		}catch(TokenizerException e)
 		{
-			//System.out.println("NUll token in StemmerFilter");
+			//System.out.println("CapitalFilter");
 		}
-		if(stream.hasNext())
-			return true;
-		else
-			return false;
-
-	}
+		
+		return stream.hasNext();	}
 
 	private boolean analyse(Token token) throws TokenizerException {
 		String termText=token.getTermText();
@@ -58,10 +49,7 @@ public class StemmerFilter extends TokenFilter {
 			String modifiedTerm=s.externalStem();
 			token.setTermText(modifiedTerm);
 		}
-		if(stream.hasNext())
-			return true;
-		else
-			return false;
+		return stream.hasNext();
 	}
 
 

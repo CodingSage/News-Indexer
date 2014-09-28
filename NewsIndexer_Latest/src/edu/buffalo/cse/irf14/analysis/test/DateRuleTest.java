@@ -28,7 +28,7 @@ public class DateRuleTest extends TFRuleBaseTest {
 								+ "1978 is an Indian actress."));
 				assertArrayEquals(
 						new String[] { "President", "Franklin", "D.",
-								"Roosevelt", "to", "proclaim", "19411207,",
+								"Roosevelt", "to", "proclaim", "19411207",
 								"'a", "date", "which", "will", "live",
 								"in", "infamy'" },
 						runTest(TokenFilterType.DATE, "President Franklin D. Roosevelt "
@@ -55,19 +55,19 @@ public class DateRuleTest extends TFRuleBaseTest {
 								+ "that league's 1948 title."));
 				assertArrayEquals(
 						new String[] { "It", "was", "now", "about",
-								"10:15:00." },
+								"10:15:00" },
 						runTest(TokenFilterType.DATE, "It was now about 10:15 am."));
 				assertArrayEquals(
 						new String[] { "Godse", "approached", "Gandhi",
 								"on", "19480130", "during", "the",
-								"evening", "prayer", "at", "17:15:00." },
+								"evening", "prayer", "at", "17:15:00" },
 						runTest(TokenFilterType.DATE, "Godse approached Gandhi on "
 								+ "January 30, 1948 during the "
 								+ "evening prayer at 5:15PM."));
 				assertArrayEquals(
 						new String[] { "Pune", "is", "known", "to", "have",
 								"existed", "as", "a", "town", "since",
-								"08470101." },
+								"08470101" },
 						runTest(TokenFilterType.DATE, "Pune is known to have existed as a town since 847AD."));
 				assertArrayEquals(
 						new String[] { "19000411", "is", "the", "101st",
@@ -82,7 +82,7 @@ public class DateRuleTest extends TFRuleBaseTest {
 						new String[] { "Apple", "is", "one", "of", "the",
 								"world's", "most", "valuable", "publicly",
 								"traded", "companies", "in",
-								"20110101-20120101." },
+								"20110101-20120101" },
 						runTest(TokenFilterType.DATE, "Apple is one of the "
 								+ "world's most valuable publicly "
 								+ "traded companies in 2011-12."));
