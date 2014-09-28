@@ -1,10 +1,14 @@
 package edu.buffalo.cse.irf14.index;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-public class Dictionary {
+public class Dictionary implements Serializable {
 
+	private static final long serialVersionUID = 1L;
 	private IndexType type;
 	Map<String, Integer> map;
 	int count;
@@ -19,17 +23,18 @@ public class Dictionary {
 		return type;
 	}
 
-	public int getId(String term) {
-		if (map.containsKey(term))
-			return map.get(term);
-		else {
-			map.put(term, ++count);
-			return count;
-		}
+	public int addTerm(String term) {
+		if (term == null || term == "")
+			return -1;
+		map.put(term, ++count);
+		return count;
 	}
 
-	public void write() {
-
+	public Integer getId(String term) {
+		return map.get(term);
 	}
 
+	public List<String> getAllIds() {
+		return new ArrayList<String>(map.keySet());
+	}
 }
