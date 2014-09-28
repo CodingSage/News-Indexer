@@ -68,7 +68,7 @@ public class IndexWriter {
 					}
 					TokenStream filteredStream = analyzer.getStream();
 					filteredStream.reset();
-					
+
 					// index the stream
 					IndexType type = getIndexType(field);
 					while (filteredStream.hasNext()) {
