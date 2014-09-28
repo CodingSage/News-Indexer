@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
  * Class that parses a given file into a Document
  */
 public class Parser {
-	
+
 	/**
 	 * Static method to parse the given file into the Document object
 	 * @param filename : The fully qualified filename to be parsed
@@ -25,7 +25,7 @@ public class Parser {
 	 */
 	public static Document parse(String filename) throws ParserException {
 		// TODO YOU MUST IMPLEMENT THIS
-		System.out.println("Filename : "+filename);
+		//System.out.println("Filename : "+filename);
 		File article=null;
 		if (filename == null)
 			throw new ParserException();
@@ -36,114 +36,114 @@ public class Parser {
 		article = new File(filename);
 		if (!article.exists())
 			throw new ParserException();
-		
+
 		Document document = new Document();
 		try
 		{
-		BufferedReader articleReader = null;
-		try {
-			articleReader = new BufferedReader(new FileReader(article));
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		String line = new String();
-		String fileid = new String();
-		String category = new String();
-		String title = new String();
-		String author = null;// new String();
-		String authorOrg = null;// new String();
-		String place = new String();
-		String date = new String();
-		StringBuilder contents = new StringBuilder();
-		boolean skip = false;
-
-		fileid = article.getName();
-		String parentTemp = article.getParent();
-		category = parentTemp.substring(parentTemp.lastIndexOf(92) + 1,
-				parentTemp.length());
-		try {
-			while ((line = articleReader.readLine()) != null) // To get Title
-			{
-				if (!line.equals(""))
-					break;
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		title = line;
-
-		try {
-			while ((line = articleReader.readLine()) != null) // To get place
-				// and date
-			{
-				if (!line.equals(""))
-					break;
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		String splitString = new String();
-		boolean isTitle = true;
-		boolean isAlpha = false;
-		// to check if it is still title
-		for (int i = 0; i < line.length(); i++) {
-			if (Character.isAlphabetic(line.charAt(i))) {
-				isAlpha = true;
-				if (!Character.isUpperCase(line.charAt(i)))
-					isTitle = false;
-			}
-		}
-		if (isTitle && isAlpha) { // then add the line to the title
-			title = title + "\n" + line;
+			BufferedReader articleReader = null;
 			try {
-				while ((line = articleReader.readLine()) != null) // To get
-					// place and
-					// date
+				articleReader = new BufferedReader(new FileReader(article));
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
+			String line = new String();
+			String fileid = new String();
+			String category = new String();
+			String title = new String();
+			String author = null;// new String();
+			String authorOrg = null;// new String();
+			String place = new String();
+			String date = new String();
+			StringBuilder contents = new StringBuilder();
+			boolean skip = false;
+
+			fileid = article.getName();
+			String parentTemp = article.getParent();
+			category = parentTemp.substring(parentTemp.lastIndexOf(92) + 1,
+					parentTemp.length());
+			try {
+				while ((line = articleReader.readLine()) != null) // To get Title
 				{
 					if (!line.equals(""))
 						break;
 				}
 			} catch (IOException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		}
-
-		if (line.contains("<AUTHOR>") && line.contains("</AUTHOR>")) {
-			if (line.contains("By"))
-				splitString = "By";
-			else if (line.contains("by"))
-				splitString = "by";
-			else
-				splitString = "BY";
-			if (line.contains(",")) {
-				String[] temp = line.split(",");
-				String[] authorTemp = temp[0].split(splitString);
-				author = authorTemp[1];
-				temp[1] = temp[1].trim();
-				authorOrg = temp[1].substring(0, temp[1].indexOf("<"));
-			} else {
-				String[] authorTemp = line.split(splitString);
-				authorTemp[1] = authorTemp[1].trim();
-				author = authorTemp[1].substring(0, authorTemp[1].indexOf("<"));
-			}
+			title = line;
 
 			try {
-				while ((line = articleReader.readLine()) != null) // To get
-					// place and
-					// date
+				while ((line = articleReader.readLine()) != null) // To get place
+					// and date
 				{
 					if (!line.equals(""))
 						break;
 				}
 			} catch (IOException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		} 
-		else if (line.contains("blah"))
-			skip = true;
-		if (!skip) {
+			String splitString = new String();
+			boolean isTitle = true;
+			boolean isAlpha = false;
+			// to check if it is still title
+			for (int i = 0; i < line.length(); i++) {
+				if (Character.isAlphabetic(line.charAt(i))) {
+					isAlpha = true;
+					if (!Character.isUpperCase(line.charAt(i)))
+						isTitle = false;
+				}
+			}
+			if (isTitle && isAlpha) { // then add the line to the title
+				title = title + "\n" + line;
+				try {
+					while ((line = articleReader.readLine()) != null) // To get
+						// place and
+						// date
+					{
+						if (!line.equals(""))
+							break;
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+
+			if (line.contains("<AUTHOR>") && line.contains("</AUTHOR>")) {
+				if (line.contains("By"))
+					splitString = "By";
+				else if (line.contains("by"))
+					splitString = "by";
+				else
+					splitString = "BY";
+				if (line.contains(",")) {
+					String[] temp = line.split(",");
+					String[] authorTemp = temp[0].split(splitString);
+					author = authorTemp[1];
+					temp[1] = temp[1].trim();
+					authorOrg = temp[1].substring(0, temp[1].indexOf("<"));
+				} else {
+					String[] authorTemp = line.split(splitString);
+					authorTemp[1] = authorTemp[1].trim();
+					author = authorTemp[1].substring(0, authorTemp[1].indexOf("<"));
+				}
+
+				try {
+					while ((line = articleReader.readLine()) != null) // To get
+						// place and
+						// date
+					{
+						if (!line.equals(""))
+							break;
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			} 
+			/*else if (line.contains("blah"))
+			{skip = true; throw new ParserException("Found blah file");}*/
+
 			String pattern = "(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may?|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|(nov|dec)(?:ember)?)";
 			Pattern p = Pattern.compile(pattern);
 			Matcher m = p.matcher(line.toLowerCase());
@@ -164,8 +164,8 @@ public class Parser {
 							place = locationDateTemp[0];
 							date = locationDateTemp[1];
 						} else {
-						place = locationDateTemp[0] + ", " + locationDateTemp[1];
-						date = locationDateTemp[2];
+							place = locationDateTemp[0] + "," + locationDateTemp[1];
+							date = locationDateTemp[2];
 						}
 					}
 					place = place.trim();
@@ -180,17 +180,16 @@ public class Parser {
 						date=placeOrDateTemp[0];
 					else
 						place=placeOrDateTemp[0];
+					place = place.trim();
+					date = date.trim();
 					contents.append(placeOrDateTemp[1].trim());
 					contents.append(" ");
-					
 				}
-				
 			} 
 			else {
 				contents.append(line);
 				contents.append(" ");
 			}
-
 			try {
 				while ((line = articleReader.readLine()) != null) {
 					contents.append(line);
@@ -199,42 +198,36 @@ public class Parser {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		} else {
-			contents.append("CRAP DOCUMENT");
-		}
-		/*
-		 * }catch(Exception e) { throw new ParserException(); } finally {
-		 * articleReader.close(); }
-		 */
+			/*
+			 * }catch(Exception e) { throw new ParserException(); } finally {
+			 * articleReader.close(); }
+			 */
+			/*System.out.println("**********DONE PROCESSING**********");
+			System.out.println("FILENAME : "+filename);
+			System.out.println("FILEID : "+fileid);
+			System.out.println("CATEGORY : "+category);
+			System.out.println("TITLE : "+title);
+			System.out.println("AUTHOR : "+author);
+			System.out.println("AUTHOR COMPANY : "+authorOrg);
+			System.out.println("PLACE : "+place.trim());
+			System.out.println("DATE : "+date);
+			System.out.println("Contents : \n"+contents);*/
 
+			String content = contents.toString();
+			document.setField(FieldNames.FILEID, fileid);
+			document.setField(FieldNames.CATEGORY, category);
+			document.setField(FieldNames.TITLE, title);
+			document.setField(FieldNames.AUTHOR, author);
+			document.setField(FieldNames.AUTHORORG, authorOrg);
+			document.setField(FieldNames.PLACE, place);
+			document.setField(FieldNames.NEWSDATE, date);
+			document.setField(FieldNames.CONTENT, content);
+			return document;
 
-		 System.out.println("**********DONE PROCESSING**********");
-		 System.out.println("FILENAME : "+filename);
-		 System.out.println("FILEID : "+fileid);
-		 System.out.println("CATEGORY : "+category);
-		 System.out.println("TITLE : "+title);
-		 System.out.println("AUTHOR : "+author);
-		 System.out.println("AUTHOR COMPANY : "+authorOrg);
-		 System.out.println("PLACE : "+place.trim());
-		 System.out.println("DATE : "+date);
-		 System.out.println("Contents : \n"+contents);
-
-		String content = contents.toString();
-
-		document.setField(FieldNames.FILEID, fileid);
-		document.setField(FieldNames.CATEGORY, category);
-		document.setField(FieldNames.TITLE, title);
-		document.setField(FieldNames.AUTHOR, author);
-		document.setField(FieldNames.AUTHORORG, authorOrg);
-		document.setField(FieldNames.PLACE, place);
-		document.setField(FieldNames.NEWSDATE, date);
-		document.setField(FieldNames.CONTENT, content);
-		return document;
-		
 		}
 		catch(Exception e)
 		{
-				
+			e.printStackTrace();
 		}
 		return document;
 	}

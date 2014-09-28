@@ -41,23 +41,22 @@ public class Runner {
 
 		try {
 			for (String cat : catDirectories) {
-				//if(cat.equals("zinc"))
-				//{
+				//if(cat.equals("acq")){
 					dir = new File(ipDir+ File.separator+ cat);
 					files = dir.list();
 					if (files == null)
 						continue;
 
 					for (String f : files) {
-						//if(f.equals("0009584")){
-						//System.out.println("===================Filename : "+f);
+						//if(f.equals("0000005")){
+							//System.out.println("===================Filename : "+f);
 							try {
 								d = Parser.parse(dir.getAbsolutePath() + File.separator +f);
 								writer.addDocument(d);
 							} catch (ParserException e) {						
 								e.printStackTrace();
 							} 
-						//}
+						//}		//For second if
 					}
 				//}				//closing bracket for the 1st if ie folder name
 			}

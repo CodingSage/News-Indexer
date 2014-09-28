@@ -76,6 +76,7 @@ public class ParserTest {
 		// Valid file name with document testing
 		try {
 			for(int i = 0; i < filenames.length; i++){
+				System.out.println(filenames[i]);
 				d = Parser.parse(filenames[i]);
 				validateTitle(d, i);
 				validateFileId(d, i);

@@ -15,7 +15,7 @@ public class DateFilter extends TokenFilter {
 	String monthPattern = "^(?:jan(?:uary)?|feb(?:ruary)?|march|mar|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|(nov|dec)(?:ember)?)$";  //mar(?:ch)?
 	String dayPattern = "(sun|mon|tue|wednes|thurs|fri|satur)day";
 	String hhmmssPattern = "(0[1-9]|1[0-2]):([0-5][0-9]:[0-5][0-9]|(59|44|29):60) (AM|am|PM|pm|Am|aM|Pm|pM)";
-	String hhmmPattern = "([0-9]|0[0-9]|[1][0-2]):([0-5]\\d)\\s*(?:AM|am|PM|pm|Am|aM|Pm|pM)";
+	String hhmmPattern = "([0-9]|0[0-9]|[1][0-2]):([0-5]\\d)\\s*(?:AM|am|PM|pm|Am|aM|Pm|pM)[,.\\s]*";
 	String time24HourPattern = "([0-9]|0[0-9]|1?[0-9]|2[0-3]):[0-5]?[0-9]"; // from 00:00 to 23:59
 	String time24WithSecondsHourPattern = "(?:2[0-3]|[01]?[0-9]):[0-5][0-9]:[0-5][0-9]"; // from 00:00:00 to 23:59:59
 	String time24WithSecondsHourPatternTimeZone = "(?:2[0-3]|[01]?[0-9]):[0-5][0-9]:[0-5][0-9][A-Za-z]{3}"; // from 00:00:00 to 23:59:59
@@ -31,35 +31,32 @@ public class DateFilter extends TokenFilter {
 
 	@Override
 	public boolean increment() throws TokenizerException {
-		Token token = stream.next();
+		Token token=stream.next();
 		try
 		{
 			if(token == null)
-				throw new TokenizerException("Invalid token in analyse method in NumberFilter");
-			return analyse(token);
-		}catch(TokenizerException e){
-			//System.out.println("Null token in DateFilter");
+				throw new TokenizerException();
+			return analyse(token);	
+		}catch(TokenizerException e)
+		{
+			//System.out.println("CapitalFilter");
 		}
-		if (stream.hasNext())
-			return true;
-		return false;
-	}
+		
+		return stream.hasNext();	}
 
 	public boolean evaluateCurrent() throws TokenizerException{
-		//System.out.println("Evaluate Current : DateFilter");
-		Token token = stream.getCurrent();
+		Token token=stream.getCurrent();
 		try
 		{
 			if(token == null)
-				throw new TokenizerException("Invalid token in analyse method in NumberFilter");
-			return analyse(token);
-		}catch(TokenizerException e){
-			//System.out.println("Null token in DateFilter");
+				throw new TokenizerException();
+			return analyse(token);	
+		}catch(TokenizerException e)
+		{
+			//System.out.println("CapitalFilter");
 		}
-		if (stream.hasNext())
-			return true;
-		return false;
-	}
+		
+		return stream.hasNext();	}
 
 	private boolean analyse(Token token) throws TokenizerException {
 		try
@@ -104,8 +101,6 @@ public class DateFilter extends TokenFilter {
 						String year = nextToken.toString();
 						token.merge(nextToken);
 						stream.remove();
-						// System.out.println("***************NEXXT TOKEN IS : "+stream.getNext().toString());
-						// nextToken=stream.next();
 						String finalTerm = new String();
 						finalTerm += year;
 						for (int j = 0; j < months.length; j++) {
@@ -225,9 +220,9 @@ public class DateFilter extends TokenFilter {
 					termText = termText + ":00";
 					token.setTermText(termText);
 				} 
-				else if (termText.contains("pm") || termText.contains("pM")
-						|| termText.contains("Pm") || termText.contains("PM")) {
+				else if (termText.contains("pm") || termText.contains("pM")|| termText.contains("Pm") || termText.contains("PM")) {
 					termText = termText.replaceAll("[A-Za-z]", "");
+					termText = termText.replaceAll("[^0-9:]", "");
 					String[] temp = termText.split(":");
 					Integer hour = Integer.parseInt(temp[0]);
 					if (hour < 12)
@@ -464,19 +459,14 @@ public class DateFilter extends TokenFilter {
 					}
 				}
 			}
-			if (stream.hasNext()) 
-				return true;
-			return false;
-
+			return stream.hasNext();	
 		}catch(NumberFormatException e)
 		{
 			stream.remove();
 		}
 		finally
 		{
-			if (stream.hasNext()) 
-				return true;
-			return false;
+			return stream.hasNext();
 		}
 	}
 

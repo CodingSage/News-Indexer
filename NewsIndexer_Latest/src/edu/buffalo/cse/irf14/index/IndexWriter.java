@@ -54,6 +54,11 @@ public class IndexWriter {
 	public void addDocument(Document d) throws IndexerException {
 		String docId = d.getField(FieldNames.FILEID)[0];
 		for (FieldNames field : FieldNames.values()) {
+<<<<<<< HEAD
+=======
+			if(field == FieldNames.FILEID)
+				continue;
+>>>>>>> 283906fe8746620637117a240b4ee0aac05f4b56
 			String[] values = d.getField(field);
 			if (values == null)
 				continue;
@@ -67,8 +72,17 @@ public class IndexWriter {
 					while (analyzer.increment()) {
 					}
 					TokenStream filteredStream = analyzer.getStream();
+<<<<<<< HEAD
 					filteredStream.reset();
 
+=======
+					/*filteredStream.reset();
+					System.out.println("*************************FILTERED STREAM********************");
+					while(filteredStream.hasNext())
+					{
+						System.out.println(filteredStream.next().toString());
+					}*/
+>>>>>>> 283906fe8746620637117a240b4ee0aac05f4b56
 					// index the stream
 					IndexType type = getIndexType(field);
 					while (filteredStream.hasNext()) {
