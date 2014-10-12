@@ -1,11 +1,8 @@
 
 package edu.buffalo.cse.irf14.analysis;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class StopWordFilter extends TokenFilter{
 	final static List<String> stopWordList=Arrays.asList("a","able","about","acrss","after","all","almost","am","among","an","and","any","are","as","at","be","because",
@@ -22,7 +19,6 @@ public class StopWordFilter extends TokenFilter{
 	public boolean increment() throws TokenizerException {
 		return analyse(stream.next());	
 	}
-
 
 	public boolean evaluateCurrent() throws TokenizerException{
 		return analyse(stream.getCurrent());	
@@ -44,7 +40,6 @@ public class StopWordFilter extends TokenFilter{
 		{
 			if(previousToken==null || nextToken==null)
 				throw new TokenizerException("Found a null token");
-
 			if(isNumber(previousToken.toString()) || isNumber(nextToken.toString()))
 				return true;
 			return false;
@@ -53,19 +48,17 @@ public class StopWordFilter extends TokenFilter{
 		{
 		}
 		return false;
-
 	}
 
 	private boolean isNumber(String token) {
 		if(token.equals("") || token.equals(" "))
 			return false;
 		token=token.replaceAll("[.,?]", "");
-		boolean flag = true;
 		for (int i = 0; i < token.length(); i++) {
 			if (!Character.isDigit(token.charAt(i)))
-				flag = false;
+				return false;
 		}
-		return flag;
+		return true;
 	}
 
 	@Override

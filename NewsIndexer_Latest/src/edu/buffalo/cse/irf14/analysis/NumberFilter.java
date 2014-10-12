@@ -8,19 +8,19 @@ public class NumberFilter extends TokenFilter {
 
 	@Override
 	public boolean increment() throws TokenizerException {
-		//Token token=stream.next();
-		return analyse(stream.next());	
+		return analyse(stream.next());
 	}
-	public boolean evaluateCurrent() throws TokenizerException{
-		//Token token=stream.getCurrent();
-		return analyse(stream.getCurrent());	
+
+	public boolean evaluateCurrent() throws TokenizerException {
+		return analyse(stream.getCurrent());
 	}
+
 	private boolean analyse(Token token) throws TokenizerException {
 
 		String termText = token.getTermText();
 		if (isNumber(termText)) {
 			termText = termText.replaceAll("[0-9,.]", "");
-			if(termText.equals(""))
+			if (termText.equals(""))
 				stream.remove();
 			else
 				token.setTermText(termText);
@@ -29,7 +29,7 @@ public class NumberFilter extends TokenFilter {
 	}
 
 	private boolean isNumber(String termText) {
-		if (termText.matches("[0-9]*[,.//]*[0-9]*[%]*"))
+		if (termText.matches("[0-9]*[,.//]*[0-9]*[%]*") && termText.length() != 8)
 			return true;
 		return false;
 	}

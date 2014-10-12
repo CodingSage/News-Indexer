@@ -54,12 +54,15 @@ public class IndexWriter {
 	public void addDocument(Document d) throws IndexerException {
 		String docId = d.getField(FieldNames.FILEID)[0];
 		for (FieldNames field : FieldNames.values()) {
+			if(field == FieldNames.FILEID) continue;
 			String[] values = d.getField(field);
 			if (values == null)
 				continue;
 			String delimiter = delimiterMap(field);
 			Tokenizer tokenizer = new Tokenizer(delimiter);
 			for (String value : values) {
+				if (value == null || value.equals(""))
+					continue;
 				try {
 					TokenStream stream = tokenizer.consume(value);
 					Analyzer analyzer = AnalyzerFactory.getInstance()
@@ -68,7 +71,6 @@ public class IndexWriter {
 					}
 					TokenStream filteredStream = analyzer.getStream();
 					filteredStream.reset();
-					
 					// index the stream
 					IndexType type = getIndexType(field);
 					while (filteredStream.hasNext()) {
@@ -121,7 +123,6 @@ public class IndexWriter {
 		}
 	}
 
-	// TODO manage instances of dictionary and index
 	private Dictionary getDictionary(IndexType type) {
 		return dictionaryMap.get(type.toString());
 	}
@@ -147,6 +148,8 @@ public class IndexWriter {
 	}
 
 	private int getSubStringCount(String str, String substr) {
+		if (substr == null || substr.equals(""))
+			return -1;
 		int i = 0, count = 0;
 		while ((i = str.indexOf(substr, i++)) != -1) {
 			count++;

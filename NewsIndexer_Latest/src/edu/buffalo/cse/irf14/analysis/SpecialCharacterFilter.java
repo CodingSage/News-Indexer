@@ -11,63 +11,40 @@ public class SpecialCharacterFilter extends TokenFilter{
 
 	@Override
 	public boolean increment() throws TokenizerException {
-		Token token=stream.next();
-		try
-		{
-			if(token == null)
-				throw new TokenizerException();
-			return analyse(token);	
-		}catch(TokenizerException e)
-		{
-			//System.out.println("CapitalFilter");
-		}
-		
-		return stream.hasNext();
+		return analyse(stream.next());	
 	}	
 
 	public boolean evaluateCurrent() throws TokenizerException{
-		Token token=stream.getCurrent();
-		try
-		{
-			if(token == null)
-				throw new TokenizerException();
-			return analyse(token);	
-		}catch(TokenizerException e)
-		{
-			//System.out.println("CapitalFilter");
-		}
-		
-		return stream.hasNext();
+		return analyse(stream.getCurrent());	
 	}
 
 	private boolean analyse(Token token) throws TokenizerException {
 		String termText=token.getTermText();
-		//Pattern p = Pattern.compile("[^a-zA-Z0-9{.}{!}{,}{?}{\\-} ]", Pattern.CASE_INSENSITIVE);
 		Matcher m = null;
 		m = p.matcher(termText);
-		if (m.find())
-		{
-			termText=termText.replaceAll("[^a-zA-Z0-9{.}{!}{,}{?}{\\-} ]", " ");
-			termText=termText.trim();
-			if(termText.contains("-"))
+		try{
+			if (m.find())
 			{
-				int position=termText.indexOf("-");
-				if(position!=0 && position!=termText.length()-1)
+				termText=termText.replaceAll("[^a-zA-Z0-9{.}{!}{,}{?}{\\-} ]", "");
+				if(termText.contains("-"))
 				{
-					char chBefore=termText.charAt(position-1);
-					char chAfter=termText.charAt(position+1);
-					if(Character.isDigit(chBefore) && Character.isDigit(chAfter))
-					{}
-					else //if(Character.isAlphabetic(chBefore) && Character.isAlphabetic(chAfter))
-						termText=termText.replace("-", "");
+					int position=termText.indexOf("-");
+					if(position!=0 && position!=termText.length()-1)
+					{
+						char chBefore=termText.charAt(position-1);
+						char chAfter=termText.charAt(position+1);
+						if(Character.isDigit(chBefore) && Character.isDigit(chAfter))
+						{}
+						else
+							termText=termText.replace("-", "");
+					}
+					else
+						termText=termText.replace("-", "");				
 				}
-				else
-					termText=termText.replace("-", "");				
+				token.setTermText(termText);
 			}
-			//eliminateSpaces(termText);
-			termText=termText.replaceAll(" ", "");
-			token.setTermText(termText);
-		}	
+		}catch(Exception e)
+		{}
 		return stream.hasNext();
 	}
 

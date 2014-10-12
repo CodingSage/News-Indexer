@@ -49,11 +49,11 @@ public class Tokenizer {
 	public TokenStream consume(String str) throws TokenizerException {
 		List<Token> tokens = new ArrayList<Token>();
 		if (str == null || str.equals(""))
-			throw new TokenizerException(
-					"Invalid string passed for tokenization");
-
+			throw new TokenizerException("Invalid string passed for tokenization");
 		String[] terms = str.split(delimiter);
 		for (String term : terms) {
+			if(term.equals(""))
+				continue;
 			Token token = new Token(term);
 			tokens.add(token);
 		}

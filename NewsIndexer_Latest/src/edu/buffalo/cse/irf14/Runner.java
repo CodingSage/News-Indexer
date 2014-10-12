@@ -19,16 +19,18 @@ public class Runner {
 	/**
 	 * 
 	 */
-	public Runner() {}
+	public Runner() {
+	}
+
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		long startTime=System.currentTimeMillis();
+		long startTime = System.currentTimeMillis();
 		System.out.println("Start");
 		String ipDir = args[0];
 		String indexDir = args[1];
-		//more? idk!
+		// more? idk!
 
 		File ipDirectory = new File(ipDir);
 		String[] catDirectories = ipDirectory.list();
@@ -41,30 +43,25 @@ public class Runner {
 
 		try {
 			for (String cat : catDirectories) {
-				//if(cat.equals("acq")){
-					dir = new File(ipDir+ File.separator+ cat);
-					files = dir.list();
-					if (files == null)
-						continue;
 
-					for (String f : files) {
-						//if(f.equals("0000005")){
-							//System.out.println("===================Filename : "+f);
-							try {
-								d = Parser.parse(dir.getAbsolutePath() + File.separator +f);
-								writer.addDocument(d);
-							} catch (ParserException e) {						
-								e.printStackTrace();
-							} 
-						//}		//For second if
+				dir = new File(ipDir + File.separator + cat);
+				files = dir.list();
+				if (files == null)
+					continue;
+				for (String f : files) {
+					try {
+						d = Parser.parse(dir.getAbsolutePath() + File.separator
+								+ f);
+						writer.addDocument(d);
+					} catch (ParserException e) {
+						e.printStackTrace();
 					}
-				//}				//closing bracket for the 1st if ie folder name
+				}
 			}
 			writer.close();
-			System.out.println("End");
-			long endTime=System.currentTimeMillis();
-			long totalTime=endTime-startTime;
-			System.out.println("Total running time : "+totalTime);
+			long endTime = System.currentTimeMillis();
+			long totalTime = endTime - startTime;
+			System.out.println("Total running time : " + totalTime);
 		} catch (IndexerException e) {
 			e.printStackTrace();
 		}

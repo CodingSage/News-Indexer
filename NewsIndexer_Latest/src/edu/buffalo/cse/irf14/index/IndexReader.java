@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -73,12 +74,12 @@ public class IndexReader {
 	 * @return The total number of terms
 	 */
 	public int getTotalValueTerms() {
-		List<Integer>ids = index.getAllIds();
+		List<Integer> ids = index.getAllIds();
 		List<String> docs = new ArrayList<String>();
 		for (Integer id : ids) {
 			List<DocumentInfo> docIds = index.getPostings(id);
 			for (DocumentInfo info : docIds) {
-				if(!ids.contains(info.getId()))
+				if (!docs.contains(info.getId()))
 					docs.add(info.getId());
 			}
 		}
@@ -99,10 +100,11 @@ public class IndexReader {
 	public Map<String, Integer> getPostings(String term) {
 		Integer id = dictionary.getId(term);
 		List<DocumentInfo> posting = index.getPostings(id);
-		if(posting == null) return null;
+		if (posting == null)
+			return null;
 		Map<String, Integer> map = new HashMap<String, Integer>();
 		for (DocumentInfo doc : posting)
-			map.put(doc.id, doc.count);
+			map.put(doc.getId(), doc.getCount());
 		return map;
 	}
 
@@ -116,20 +118,23 @@ public class IndexReader {
 	 *         for invalid k values
 	 */
 	public List<String> getTopK(int k) {
+		if (k < 1)
+			return null;
 		List<Integer> ids = index.getAllIds();
 		List<DocumentInfo> info = new ArrayList<DocumentInfo>();
 		for (Integer id : ids) {
 			int sum = 0;
 			List<DocumentInfo> doc = index.getPostings(id);
-			for (DocumentInfo documentInfo : doc) {
-				sum += documentInfo.count;
-			}
+			for (DocumentInfo documentInfo : doc)
+				sum += documentInfo.getCount();
 			info.add(new DocumentInfo(id.toString(), sum));
 		}
 		Collections.sort(info);
 		List<String> list = new ArrayList<String>();
-		for (int i = 0; i < k; i++)
-			list.add(info.get(i).getId());
+		for (int i = 0; i < k; i++) {
+			int id = Integer.parseInt(info.get(i).getId());
+			list.add(dictionary.getKey(id));
+		}
 		return list;
 	}
 
@@ -145,7 +150,38 @@ public class IndexReader {
 	 *         return null if the given term list returns no results BONUS ONLY
 	 */
 	public Map<String, Integer> query(String... terms) {
-		// TODO : BONUS ONLY
-		return null;
+		Map<String, Integer> res = null;
+		List<List<DocumentInfo>> info = new ArrayList<List<DocumentInfo>>();
+		Integer min = null, minIndex = null;
+		ArrayList<String> aterms = new ArrayList<String>(Arrays.asList(terms));
+		for (String term : aterms) {
+			int id = dictionary.getId(term);
+			List<DocumentInfo> i = index.getPostings(id);
+			if (min == null || min > i.size()) {
+				min = i.size();
+				minIndex = aterms.indexOf(term);
+			}
+			info.add(new ArrayList<DocumentInfo>(i));
+		}
+		List<DocumentInfo> i = info.get(minIndex);
+		for (DocumentInfo d : i) {
+			int count = d.getCount();
+			boolean flag = true;
+			for (List<DocumentInfo> list : info) {
+				if (!list.contains(d)) {
+					flag = false;
+					break;
+				} else if (list != i) {
+					int j = list.indexOf(new DocumentInfo(d.getId(), 0));
+					count += list.get(j).getCount();
+				}
+			}
+			if (flag) {
+				if (res == null)
+					res = new HashMap<String, Integer>();
+				res.put(d.getId(), count);
+			}
+		}
+		return res;
 	}
 }

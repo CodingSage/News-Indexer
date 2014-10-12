@@ -3,20 +3,18 @@ package edu.buffalo.cse.irf14.index;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class Index implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private IndexType type;
-	Map<Integer, Set<DocumentInfo>> map;
+	Map<Integer, List<DocumentInfo>> map;
 
 	public Index(IndexType type) {
 		this.type = type;
-		map = new HashMap<Integer, Set<DocumentInfo>>();
+		map = new HashMap<Integer, List<DocumentInfo>>();
 	}
 
 	public IndexType getType() {
@@ -27,9 +25,12 @@ public class Index implements Serializable {
 		if (termId == -1)
 			return;
 		if (map.containsKey(termId)) {
-			map.get(termId).add(new DocumentInfo(docId, termFreq));
+			List<DocumentInfo> list = map.get(termId);
+			DocumentInfo i = new DocumentInfo(docId, termFreq);
+			if(!list.contains(i))
+				list.add(i);
 		} else {
-			HashSet<DocumentInfo> list = new HashSet<DocumentInfo>();
+			List<DocumentInfo> list = new ArrayList<DocumentInfo>();
 			list.add(new DocumentInfo(docId, termFreq));
 			map.put(termId, list);
 		}

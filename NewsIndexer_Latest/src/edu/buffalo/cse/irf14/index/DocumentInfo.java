@@ -5,8 +5,8 @@ import java.io.Serializable;
 public class DocumentInfo implements Comparable<DocumentInfo>, Serializable {
 
 	private static final long serialVersionUID = 1L;
-	String id;
-	int count;
+	private String id;
+	private int count;
 
 	public DocumentInfo() {
 	}
@@ -41,7 +41,7 @@ public class DocumentInfo implements Comparable<DocumentInfo>, Serializable {
 	public boolean equals(Object info) {
 		if (!(info instanceof DocumentInfo))
 			return false;
-		return id == ((DocumentInfo) info).getId();
+		return id.equals(((DocumentInfo) info).getId());
 	}
 
 	@Override
@@ -49,5 +49,10 @@ public class DocumentInfo implements Comparable<DocumentInfo>, Serializable {
 		if (count == o.getCount())
 			return 0;
 		return count < o.getCount() ? 1 : -1;
+	}
+
+	@Override
+	public String toString() {
+		return id + ":" + count;
 	}
 }

@@ -15,7 +15,7 @@ import java.util.List;
  * behavior
  */
 public class TokenStream implements Iterator<Token>{
-	//TODO TokenStream class implementation
+
 	private List<Token> tokens;
 	private int index;
 	private int elementRemoved;
@@ -161,7 +161,6 @@ public class TokenStream implements Iterator<Token>{
 	}
 
 	public void removeNext() {
-		//System.out.println("Token being removed is : "+tokens.get(index+1));
 		tokens.remove(index+1);
 	}
 	

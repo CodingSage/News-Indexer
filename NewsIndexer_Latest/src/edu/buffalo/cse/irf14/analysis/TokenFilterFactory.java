@@ -3,7 +3,6 @@
  */
 package edu.buffalo.cse.irf14.analysis;
 
-import edu.buffalo.cse.irf14.analysis.test.SymbolRuleTest;
 
 
 /**
@@ -42,7 +41,6 @@ public class TokenFilterFactory {
 	 * @return The built {@link TokenFilter} instance
 	 */
 	public TokenFilter getFilterByType(TokenFilterType type, TokenStream stream) {
-		//TODO : YOU MUST IMPLEMENT THIS METHOD - factory
 		if (type == TokenFilterType.SPECIALCHARS) {
 			return new SpecialCharacterFilter(stream);
 		}

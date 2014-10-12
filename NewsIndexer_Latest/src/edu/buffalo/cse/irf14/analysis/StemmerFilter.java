@@ -11,34 +11,11 @@ public class StemmerFilter extends TokenFilter {
 
 	@Override
 	public boolean increment() throws TokenizerException {
-		// TODO Auto-generated method stub
-		Token token=stream.next();
-		try
-		{
-			if(token == null)
-				throw new TokenizerException();
-			return analyse(token);	
-		}catch(TokenizerException e)
-		{
-			//System.out.println("CapitalFilter");
-		}
-		
-		return stream.hasNext();	}
-
+			return analyse(stream.next());	
+	}
 	public boolean evaluateCurrent() throws TokenizerException{
-		Token token=stream.getCurrent();
-		try
-		{
-			if(token == null)
-				throw new TokenizerException();
-			return analyse(token);	
-		}catch(TokenizerException e)
-		{
-			//System.out.println("CapitalFilter");
-		}
-		
-		return stream.hasNext();	}
-
+			return analyse(stream.getCurrent());	
+	}
 	private boolean analyse(Token token) throws TokenizerException {
 		String termText=token.getTermText();
 		Pattern p=Pattern.compile("^[A-Za-z]");
@@ -52,10 +29,8 @@ public class StemmerFilter extends TokenFilter {
 		return stream.hasNext();
 	}
 
-
 	@Override
 	public TokenStream getStream() {
-		// TODO Auto-generated method stub
 		return stream;
 	}
 

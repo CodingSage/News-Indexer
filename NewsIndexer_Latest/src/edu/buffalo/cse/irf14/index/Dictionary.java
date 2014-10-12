@@ -24,7 +24,7 @@ public class Dictionary implements Serializable {
 	}
 
 	public int addTerm(String term) {
-		if (term == null || term == "")
+		if (term == null || term.equals(""))
 			return -1;
 		map.put(term, ++count);
 		return count;
@@ -36,5 +36,13 @@ public class Dictionary implements Serializable {
 
 	public List<String> getAllIds() {
 		return new ArrayList<String>(map.keySet());
+	}
+	
+	public String getKey(int id){
+		for (Map.Entry<String, Integer> entry : map.entrySet()) {
+			if(entry.getValue() == id)
+				return entry.getKey();
+		}
+		return null;
 	}
 }

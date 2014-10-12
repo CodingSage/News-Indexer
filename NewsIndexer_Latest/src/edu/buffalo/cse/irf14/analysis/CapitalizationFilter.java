@@ -9,7 +9,6 @@ public class CapitalizationFilter extends TokenFilter {
 
 	@Override
 	public boolean increment() throws TokenizerException {
-		// TODO check beginning of sentence condition
 		return analyse(stream.next());	
 	}
 
@@ -66,38 +65,16 @@ public class CapitalizationFilter extends TokenFilter {
 	public TokenStream getStream() {
 		return stream;
 	}
-
-	/*private boolean toLowerCase(Token token){
-		if (isFirstWord(token, stream) && !isUpperCaseWord(token)) {
-			token.setTermText(token.toString());
-			return true;
-		}
-		return false;
-	}
-
-	private boolean isUpperCaseWord(Token token) {
-		String word = token.toString();
-		return word.toUpperCase().equals(word);
-	}
-
-	private boolean isCamelCase(Token token) {
-		char startChar = token.toString().toCharArray()[0];
-		if (startChar <= 'Z' && startChar >= 'A')
-			return true;
-		return false;
-	}*/
 	private boolean isAllSmall(String term)
 	{
-		boolean flag=true;
 		for(int i=0;i<term.length();i++)
 		{
 			if(!Character.isDigit(term.charAt(i)) && Character.isUpperCase(term.charAt(i)))
-				flag=false;
+				return false;
 		}
-		return flag;
+		return true;
 	}
 	private boolean isFirstWord() {
-		//System.out.println("Complex expression is : "+stream.toString().split(" ")[0].toString());
 		Token previousToken=stream.getPrevious();
 		if(previousToken!=null)
 		{
@@ -106,7 +83,6 @@ public class CapitalizationFilter extends TokenFilter {
 					return true;
 				return false;	
 			}
-
 		}
 		return true;
 	}

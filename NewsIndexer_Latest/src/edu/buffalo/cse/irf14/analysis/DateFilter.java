@@ -4,91 +4,44 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class DateFilter extends TokenFilter {
-	String[][] months = { { "January", "01" }, { "February", "02" },
+	final static String[][] months = { { "January", "01" }, { "February", "02" },
 			{ "March", "03" }, { "April", "04" }, { "May", "05" },
 			{ "June", "06" }, { "July", "07" }, { "August", "08" },
 			{ "September", "09" }, { "October", "10" }, { "November", "11" },
 			{ "December", "12" } };
-	String yyyymmddDatePattern = "^(19|20)\\d\\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$";
-	String ddmmyyyyDatePattern = "(0[1-9]|[12][0-9]|3[01])[.-/](0[1-9]|1[012])[- /.](19|20)\\d\\d";
-	String mmddyyyyDatePattern = "^(0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])[- /.](19|20)\\d\\d$";
-	String monthPattern = "^(?:jan(?:uary)?|feb(?:ruary)?|march|mar|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|(nov|dec)(?:ember)?)$";  //mar(?:ch)?
-	String dayPattern = "(sun|mon|tue|wednes|thurs|fri|satur)day";
-	String hhmmssPattern = "(0[1-9]|1[0-2]):([0-5][0-9]:[0-5][0-9]|(59|44|29):60) (AM|am|PM|pm|Am|aM|Pm|pM)";
-	String hhmmPattern = "([0-9]|0[0-9]|[1][0-2]):([0-5]\\d)\\s*(?:AM|am|PM|pm|Am|aM|Pm|pM)[,.\\s]*";
-	String time24HourPattern = "([0-9]|0[0-9]|1?[0-9]|2[0-3]):[0-5]?[0-9]"; // from 00:00 to 23:59
-	String time24WithSecondsHourPattern = "(?:2[0-3]|[01]?[0-9]):[0-5][0-9]:[0-5][0-9]"; // from 00:00:00 to 23:59:59
-	String time24WithSecondsHourPatternTimeZone = "(?:2[0-3]|[01]?[0-9]):[0-5][0-9]:[0-5][0-9][A-Za-z]{3}"; // from 00:00:00 to 23:59:59
-	String complexPattern = "(?:2[0-3]|[01]?[0-9]):[0-5][0-9]:[0-5][0-9].*(sun|mon|tue|wednes|thurs|fri|satur)day.*(0[1-9]|[12][0-9]|3[01]).*"
-			+ "(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|(nov|dec)(?:ember)?).*(19|20)\\d\\d";
-	String dateMonthnameYearPattern = "(0[1-9]|[12][0-9]|3[01]) (?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|(nov|dec)(?:ember)?) (19|20)\\d\\d";
-	String monthnameDateYearPattern = "(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|(nov|dec)(?:ember)?) (0[1-9]|[12][0-9]|3[01]),//s*(19|20)\\d\\d";
-	String monthnameDatePattern = "(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|(nov|dec)(?:ember)?) (0[1-9]|[12][0-9]|3[01])";
-
+	final static String yyyymmddDatePattern = "^(19|20)\\d\\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$";
+	final static String ddmmyyyyDatePattern = "(0[1-9]|[12][0-9]|3[01])[.-/](0[1-9]|1[012])[- /.](19|20)\\d\\d";
+	final static String mmddyyyyDatePattern = "^(0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])[- /.](19|20)\\d\\d$";
+	static String monthPattern = "^(?:jan(?:uary)?|feb(?:ruary)?|march|mar|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|(nov|dec)(?:ember)?)$";  //mar(?:ch)?
+	final static String hhmmPattern = "([0-9]|0[0-9]|[1][0-2]):([0-5]\\d)\\s*(?:AM|am|PM|pm|Am|aM|Pm|pM)[,.\\s]*";
+	final static String time24HourPattern = "([0-9]|0[0-9]|1?[0-9]|2[0-3]):[0-5]?[0-9]"; // from 00:00 to 23:59
+	final static String time24WithSecondsHourPatternTimeZone = "(?:2[0-3]|[01]?[0-9]):[0-5][0-9]:[0-5][0-9][A-Za-z]{3}"; // from 00:00:00 to 23:59:59
+	final static String dateMonthnameYearPattern = "(0[1-9]|[12][0-9]|3[01]) (?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|(nov|dec)(?:ember)?) (19|20)\\d\\d";
+	final static String monthnameDateYearPattern = "(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|(nov|dec)(?:ember)?) (0[1-9]|[12][0-9]|3[01]),//s*(19|20)\\d\\d";
+	final static String monthnameDatePattern = "(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|(nov|dec)(?:ember)?) (0[1-9]|[12][0-9]|3[01])";
+	static final Pattern p = Pattern.compile(monthPattern, Pattern.CASE_INSENSITIVE);
+	static Matcher m = null;
 	public DateFilter(TokenStream stream) {
 		super(stream);
 	}
 
 	@Override
 	public boolean increment() throws TokenizerException {
-		Token token=stream.next();
-		try
-		{
-			if(token == null)
-				throw new TokenizerException();
-			return analyse(token);	
-		}catch(TokenizerException e)
-		{
-			//System.out.println("CapitalFilter");
-		}
-		
-		return stream.hasNext();	}
-
+		return analyse(stream.next());	
+	}
 	public boolean evaluateCurrent() throws TokenizerException{
-		Token token=stream.getCurrent();
-		try
-		{
-			if(token == null)
-				throw new TokenizerException();
-			return analyse(token);	
-		}catch(TokenizerException e)
-		{
-			//System.out.println("CapitalFilter");
-		}
-		
-		return stream.hasNext();	}
-
+		return analyse(stream.getCurrent());	
+	}
 	private boolean analyse(Token token) throws TokenizerException {
 		try
 		{
-			Pattern p = Pattern.compile(monthPattern, Pattern.CASE_INSENSITIVE);
-			Matcher m = null;
 			String termText = token.getTermText();
-			if (termText.matches(yyyymmddDatePattern)) {
-				String[] splitDate = termText.split(getDivider(termText));
-				termText = splitDate[2] + splitDate[1] + splitDate[0];
-				token.setTermText(termText);
-			}
-			else if (termText.matches(ddmmyyyyDatePattern)) {
-				String[] splitDate = termText.split(getDivider(termText));
-				termText = splitDate[2] + splitDate[1] + splitDate[0];
-				token.setTermText(termText);
-			}
-			else if (termText.matches(mmddyyyyDatePattern)) {
-				String[] splitDate = termText.split(getDivider(termText));
-				termText = splitDate[2] + splitDate[0] + splitDate[1];
-				token.setTermText(termText);
-			}
-			else if (isNumber(termText)) {
+			if (isNumber(termText)) {
 				if (Integer.parseInt(termText) <= 31) // If the single number found less than 31 then it is a date and might be followed by Month and  Year
 				{
 					Token nextToken = stream.getNext();
 					if(nextToken==null)
-					{
-						if(stream.hasNext())
-							return true;
-						return false;
-					}
+						return stream.hasNext();
 					String nextTerm = nextToken.toString();
 					m = p.matcher(nextTerm);
 					if (m.find()) {
@@ -161,29 +114,29 @@ public class DateFilter extends TokenFilter {
 			{
 				int year = 0;
 				boolean started = false;
+				char ch=termText.charAt(termText.length()-1);
 				for (int i = 0; i < termText.length(); i++) {
 					if (Character.isDigit(termText.charAt(i)))
-						year = year * 10
-						+ Integer.parseInt(termText.substring(i, i + 1));
+						year = year * 10 + Integer.parseInt(termText.substring(i, i + 1));
 					else
 						break;
 				}
 				String tempText = termText.toLowerCase();
 				if (tempText.contains("ad")) {
 					if (year < 100)
-						termText = "00" + year + "0101";
+						termText = "00" + year + "0101"+ch;
 					else if (year < 1000)
-						termText = "0" + year + "0101";
+						termText = "0" + year + "0101"+ch;
 					else
-						termText = "" + year + "0101";
+						termText = "" + year + "0101"+ch;
 				} 
 				else {
 					if (year < 100)
-						termText = "-00" + year + "0101";
+						termText = "-00" + year + "0101"+ch;
 					else if (year < 1000)
-						termText = "-0" + year + "0101";
+						termText = "-0" + year + "0101"+ch;
 					else
-						termText = "-" + year + "0101";
+						termText = "-" + year + "0101"+ch;
 				}
 				token.setTermText(termText);
 			} 
@@ -191,12 +144,13 @@ public class DateFilter extends TokenFilter {
 			{
 				Token nextToken = stream.getNext();
 				String nextTerm = nextToken.toString();
+				char ch=nextTerm.charAt(nextTerm.length()-1);
 				nextTerm = nextTerm.replaceAll("[^a-zA-Z]", "");
 				if (nextTerm.equalsIgnoreCase("am")) {
 					nextToken = stream.getNext();
 					token.merge(nextToken);
 					stream.removeNext();
-					termText = termText + ":00";
+					termText = termText + ":00"+ch;
 					token.setTermText(termText);
 					nextToken = stream.next();
 				} 
@@ -208,26 +162,28 @@ public class DateFilter extends TokenFilter {
 					Integer hour = Integer.parseInt(temp[0]);
 					if (hour < 12)
 						hour += 12;
-					termText += hour + ":" + temp[1] + ":00";
+					termText += hour + ":" + temp[1] + ":00"+ch;
 					token.setTermText(termText);
 					nextToken = stream.next();
 				}
 			} 
 			else if (termText.matches(hhmmPattern)) {
-				if (termText.contains("am") || termText.contains("aM")
-						|| termText.contains("Am") || termText.contains("AM")) {
+				if (termText.contains("am") || termText.contains("aM") || termText.contains("Am") || termText.contains("AM")) 
+				{
+					char ch=termText.charAt(termText.length()-1);
 					termText = termText.replaceAll("[A-Za-z]", "");
-					termText = termText + ":00";
+					termText = termText + ":00"+ch;
 					token.setTermText(termText);
 				} 
 				else if (termText.contains("pm") || termText.contains("pM")|| termText.contains("Pm") || termText.contains("PM")) {
+					char ch=termText.charAt(termText.length()-1);
 					termText = termText.replaceAll("[A-Za-z]", "");
 					termText = termText.replaceAll("[^0-9:]", "");
 					String[] temp = termText.split(":");
 					Integer hour = Integer.parseInt(temp[0]);
 					if (hour < 12)
 						hour += 12;
-					termText = hour + ":" + temp[1] + ":00";
+					termText = hour + ":" + temp[1] + ":00"+ch;
 					token.setTermText(termText);
 				}
 			} 
@@ -238,6 +194,7 @@ public class DateFilter extends TokenFilter {
 					stream.next();
 				}
 				else{
+					char ch=termText.charAt(termText.length()-1);
 					String[] temp = termText.split("-");
 					temp[1] = temp[1].replaceAll("[^0-9]*", "");
 					if (isNumber(temp[0]) && isNumber(temp[1])) {
@@ -246,7 +203,7 @@ public class DateFilter extends TokenFilter {
 							if (temp[1].length() < temp[0].length()) {
 								temp[1] = temp[0].substring(0, 2) + temp[1];
 							}
-							termText = temp[0] + "0101-" + temp[1] + "0101";
+							termText = temp[0] + "0101-" + temp[1] + "0101"+ch;
 							token.setTermText(termText);
 						}
 						else
@@ -257,11 +214,27 @@ public class DateFilter extends TokenFilter {
 					}
 				}
 			} 
+			else if (termText.matches(yyyymmddDatePattern)) {
+				String[] splitDate = termText.split(getDivider(termText));
+				termText = splitDate[2] + splitDate[1] + splitDate[0];
+				token.setTermText(termText);
+			}
+			else if (termText.matches(ddmmyyyyDatePattern)) {
+				String[] splitDate = termText.split(getDivider(termText));
+				termText = splitDate[2] + splitDate[1] + splitDate[0];
+				token.setTermText(termText);
+			}
+			else if (termText.matches(mmddyyyyDatePattern)) {
+				String[] splitDate = termText.split(getDivider(termText));
+				termText = splitDate[2] + splitDate[0] + splitDate[1];
+				token.setTermText(termText);
+			}
 			else 
 			{
 				m = p.matcher(termText); // Matching a month for the next else-if
 				if (termText.matches(time24WithSecondsHourPatternTimeZone)) // this checks for the complex part with the UTC
 				{
+					System.out.println("here");
 					termText = termText.replaceAll("[A-Za-z]", "");
 					token.setTermText(termText);
 					Token rest = stream.getRest();
@@ -351,7 +324,8 @@ public class DateFilter extends TokenFilter {
 					else if (mdyMatcher.find()) {} 
 					else if (mdMatcher.find()) {}
 				} 
-				else if (m.find()) {
+				else if (m.find())
+				{
 					String month = termText;
 					Token nextToken = stream.getNext();
 					if(nextToken==null)				//Just a month
@@ -366,9 +340,7 @@ public class DateFilter extends TokenFilter {
 						}
 						finalTerm="1900"+monthNumber+"01";
 						token.setTermText(finalTerm);
-						if(stream.hasNext())
-							return true;
-						return false;
+						return stream.hasNext();
 					}
 					String nextTerm = nextToken.toString();
 					if (isDate(nextTerm)) // Maybe just a month by itself followed by some arbitrary words. Check if the next token is a number.
@@ -383,11 +355,13 @@ public class DateFilter extends TokenFilter {
 								nextToken = stream.getNext();
 								token.merge(nextToken);
 								String date = nextTerm;
+								
 								date = date.replaceAll("[,]*", "");
 								stream.removeNext();
 								nextToken = stream.getNext();
 
 								nextTerm = nextToken.toString();
+								Character ch=nextTerm.charAt(nextTerm.length()-1);
 								nextTerm = nextTerm.replaceAll("[,]*", "");
 
 								String year = nextTerm;
@@ -403,10 +377,21 @@ public class DateFilter extends TokenFilter {
 									}
 								}
 								finalTerm += monthNumber;
-								if (Integer.parseInt(date) < 10)
-									finalTerm = finalTerm + "0" + date;
+								if(Character.isDigit(ch))
+								{
+									if (Integer.parseInt(date) < 10)
+										finalTerm = finalTerm + "0" + date;
+									else
+										finalTerm += date;
+								}
 								else
-									finalTerm += date;
+								{
+									if (Integer.parseInt(date) < 10)
+										finalTerm = finalTerm + "0" + date+ch;
+									else
+										finalTerm += date+ch;
+								}
+								
 								token.setTermText(finalTerm);
 							} 
 							else // Format is month date
@@ -477,7 +462,6 @@ public class DateFilter extends TokenFilter {
 			return ".";
 		else if (termText.contains("-"))
 			return "-";
-
 		return null;
 	}
 

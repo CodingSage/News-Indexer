@@ -116,7 +116,7 @@ public class IndexerTest {
 			while (analyzer.increment()) {
 				
 			}
-			
+			stream = analyzer.getStream();
 			stream.reset();
 			return stream.next().toString();
 		} catch (TokenizerException e) {
@@ -244,7 +244,7 @@ public class IndexerTest {
 			retlist.add(temp);
 		}
 		
-		return (HashMap<String, Integer>[]) retlist.toArray();
+		return (HashMap<String, Integer>[]) retlist.toArray(new HashMap[retlist.size()]);
 	}
 
 }

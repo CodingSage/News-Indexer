@@ -21,7 +21,6 @@ public class AccentFilter extends TokenFilter {
 		if(!Normalizer.isNormalized(token.getTermText(), Normalizer.Form.NFD)){
 			token.setTermText(Normalizer.normalize(token.getTermText(), Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", ""));
 		}
-		
 		return stream.hasNext();	
 	}
 

@@ -2,7 +2,7 @@ package edu.buffalo.cse.irf14.analysis;
 
 public class SymbolFilter extends TokenFilter {
 
-	static String [][]commonContractions={{"ain't","am not"},
+	final static String [][]commonContractions={{"ain't","am not"},
 		{"aren't","are not"},
 		{"can't","cannot"},	{"could've","could have"},{"coudn't","could not"},{"couldn't've","could not have"},
 		{"didn't","did not"},{"doesn't","does not"},{"don't","do not"},
@@ -48,7 +48,6 @@ public class SymbolFilter extends TokenFilter {
 			int count=termText.length() - termText.replace(".", "").length();
 			if(count==1)
 			{
-
 				if(termText.charAt(termText.length()-1) == '.')
 				{
 					termText=termText.replace(".","");
@@ -73,16 +72,15 @@ public class SymbolFilter extends TokenFilter {
 				}
 			}
 		}
-		if(termText.contains(","))
+		 if(termText.contains(","))
 		{
 			termText=termText.replaceAll(",","");
 			token.setTermText(termText);
 		}
 		if(termText.contains("?"))
 		{
-			//boolean b=checkMiddle(termText);
 			if((termText.indexOf("?") == termText.length()-1))
-			/*if(!b)*/{
+			{
 				termText=termText.replace("?"," ");
 				termText=termText.trim();
 				token.setTermText(termText);
@@ -219,32 +217,19 @@ public class SymbolFilter extends TokenFilter {
 	}
 
 	private boolean checkMiddle(String termText) {
-		boolean b=true;
 		int position=termText.indexOf("?");
 		if(position!=0 && position!=termText.length()-1)
 		{
 			char before=termText.charAt(position-1);
 			char after=termText.charAt(position+1);
 			if(Character.isAlphabetic(before) && Character.isAlphabetic(after))
-				b=false;
+				return false;
 		}
-
-		//if(position==termText.length()-1)
-		//b=false;
-		return b;
+		return true;
 	}
 
 	@Override
 	public TokenStream getStream() {
-		// TODO Auto-generated method stub
 		return stream;
 	}
-
-	private boolean checkDash(String token){
-		String []temp=token.split("-");
-
-
-		return false;
-	}
-
 }

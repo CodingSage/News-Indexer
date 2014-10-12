@@ -23,8 +23,10 @@ public class Parser {
 	 * @return The parsed and fully loaded Document object
 	 * @throws ParserException In case any error occurs during parsing
 	 */
+	static final String pattern = "(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may?|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|(nov|dec)(?:ember)?)";
+	static final Pattern p = Pattern.compile(pattern);
 	public static Document parse(String filename) throws ParserException {
-		// TODO YOU MUST IMPLEMENT THIS
+
 		//System.out.println("Filename : "+filename);
 		File article=null;
 		if (filename == null)
@@ -36,31 +38,27 @@ public class Parser {
 		article = new File(filename);
 		if (!article.exists())
 			throw new ParserException();
-
+		BufferedReader articleReader = null;
 		Document document = new Document();
+		String line = new String();
+		String fileid = new String();
+		String category = new String();
+		String title = new String();
+		String author = null;// new String();
+		String authorOrg = null;// new String();
+		String place = new String();
+		String date = new String();
+		StringBuilder contents = new StringBuilder();
 		try
 		{
-			BufferedReader articleReader = null;
 			try {
 				articleReader = new BufferedReader(new FileReader(article));
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
-			}
-			String line = new String();
-			String fileid = new String();
-			String category = new String();
-			String title = new String();
-			String author = null;// new String();
-			String authorOrg = null;// new String();
-			String place = new String();
-			String date = new String();
-			StringBuilder contents = new StringBuilder();
-			boolean skip = false;
-
+			}		
 			fileid = article.getName();
 			String parentTemp = article.getParent();
-			category = parentTemp.substring(parentTemp.lastIndexOf(92) + 1,
-					parentTemp.length());
+			category = parentTemp.substring(parentTemp.lastIndexOf(92) + 1,parentTemp.length());
 			try {
 				while ((line = articleReader.readLine()) != null) // To get Title
 				{
@@ -68,39 +66,27 @@ public class Parser {
 						break;
 				}
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			title = line;
 
 			try {
-				while ((line = articleReader.readLine()) != null) // To get place
-					// and date
+				while ((line = articleReader.readLine()) != null) // To get place and date
 				{
 					if (!line.equals(""))
 						break;
 				}
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			String splitString = new String();
-			boolean isTitle = true;
-			boolean isAlpha = false;
-			// to check if it is still title
-			for (int i = 0; i < line.length(); i++) {
-				if (Character.isAlphabetic(line.charAt(i))) {
-					isAlpha = true;
-					if (!Character.isUpperCase(line.charAt(i)))
-						isTitle = false;
-				}
-			}
-			if (isTitle && isAlpha) { // then add the line to the title
+			boolean isTitle = false;
+			if(line.equals(line.toUpperCase()))
+				isTitle=true;
+			if (isTitle /*&& isAlpha*/) { // then add the line to the title
 				title = title + "\n" + line;
 				try {
-					while ((line = articleReader.readLine()) != null) // To get
-						// place and
-						// date
+					while ((line = articleReader.readLine()) != null) // To get place and date
 					{
 						if (!line.equals(""))
 							break;
@@ -109,7 +95,8 @@ public class Parser {
 					e.printStackTrace();
 				}
 			}
-
+			if(line==null)
+				throw new ParserException();
 			if (line.contains("<AUTHOR>") && line.contains("</AUTHOR>")) {
 				if (line.contains("By"))
 					splitString = "By";
@@ -130,9 +117,7 @@ public class Parser {
 				}
 
 				try {
-					while ((line = articleReader.readLine()) != null) // To get
-						// place and
-						// date
+					while ((line = articleReader.readLine()) != null) // To get place and date
 					{
 						if (!line.equals(""))
 							break;
@@ -141,11 +126,6 @@ public class Parser {
 					e.printStackTrace();
 				}
 			} 
-			/*else if (line.contains("blah"))
-			{skip = true; throw new ParserException("Found blah file");}*/
-
-			String pattern = "(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may?|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|(nov|dec)(?:ember)?)";
-			Pattern p = Pattern.compile(pattern);
 			Matcher m = p.matcher(line.toLowerCase());
 			if (m.find() && m.start() < (line.length()) / 2) {
 				int index = line.lastIndexOf("-");
@@ -197,22 +177,17 @@ public class Parser {
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
-			}
-			/*
-			 * }catch(Exception e) { throw new ParserException(); } finally {
-			 * articleReader.close(); }
-			 */
-			/*System.out.println("**********DONE PROCESSING**********");
-			System.out.println("FILENAME : "+filename);
-			System.out.println("FILEID : "+fileid);
-			System.out.println("CATEGORY : "+category);
-			System.out.println("TITLE : "+title);
-			System.out.println("AUTHOR : "+author);
-			System.out.println("AUTHOR COMPANY : "+authorOrg);
-			System.out.println("PLACE : "+place.trim());
-			System.out.println("DATE : "+date);
-			System.out.println("Contents : \n"+contents);*/
-
+			}						
+		}
+		catch(Exception e)
+		{
+			//e.printStackTrace();
+		}
+		try {
+			articleReader.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}finally{
 			String content = contents.toString();
 			document.setField(FieldNames.FILEID, fileid);
 			document.setField(FieldNames.CATEGORY, category);
@@ -222,12 +197,6 @@ public class Parser {
 			document.setField(FieldNames.PLACE, place);
 			document.setField(FieldNames.NEWSDATE, date);
 			document.setField(FieldNames.CONTENT, content);
-			return document;
-
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
 		}
 		return document;
 	}

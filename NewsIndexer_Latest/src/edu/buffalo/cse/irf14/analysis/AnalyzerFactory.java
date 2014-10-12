@@ -49,7 +49,7 @@ public class AnalyzerFactory {
 		if(name == FieldNames.AUTHOR)
 			return new FilterChain(stream, new ArrayList<TokenFilterType>(){{add(TokenFilterType.SPECIALCHARS);add(TokenFilterType.NUMERIC);}});
 		if(name == FieldNames.AUTHORORG)
-			return new FilterChain(stream, new ArrayList<TokenFilterType>(){{add(TokenFilterType.NUMERIC);add(TokenFilterType.SPECIALCHARS);}});
+			return new FilterChain(stream, new ArrayList<TokenFilterType>(){{add(TokenFilterType.SPECIALCHARS);add(TokenFilterType.NUMERIC);}});
 		if(name == FieldNames.CATEGORY)
 			return new FilterChain(stream, new ArrayList<TokenFilterType>(){{add(TokenFilterType.NUMERIC);add(TokenFilterType.SPECIALCHARS);}});
 		if(name == FieldNames.FILEID)
@@ -63,8 +63,8 @@ public class AnalyzerFactory {
 		if(name == FieldNames.CONTENT)
 			return new FilterChain(stream, new ArrayList<TokenFilterType>(){{
 				add(TokenFilterType.STOPWORD);
-				add(TokenFilterType.SYMBOL);
 				add(TokenFilterType.CAPITALIZATION);
+				add(TokenFilterType.SYMBOL);
 				add(TokenFilterType.SPECIALCHARS);	
 				add(TokenFilterType.ACCENT);
 				add(TokenFilterType.DATE);		
