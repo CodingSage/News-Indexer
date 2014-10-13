@@ -3,8 +3,7 @@
  */
 package edu.buffalo.cse.irf14.analysis.test;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import org.junit.Test;
 
