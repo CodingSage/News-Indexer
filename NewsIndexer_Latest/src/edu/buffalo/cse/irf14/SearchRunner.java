@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -14,6 +15,7 @@ import edu.buffalo.cse.irf14.query.Query;
 import edu.buffalo.cse.irf14.query.QueryParser;
 import edu.buffalo.cse.irf14.query.SearchEngine;
 import edu.buffalo.cse.irf14.query.SearchResult;
+import edu.buffalo.cse.irf14.query.SearchResultComparator;
 
 /**
  * Main class to run the searcher. As before implement all TODO methods unless
@@ -51,7 +53,7 @@ public class SearchRunner {
 		indexPath = indexDir;
 		corpusPath = corpusDir;
 		this.stream = stream;
-		SearchEngine engine = new SearchEngine(indexDir, corpusDir);
+		engine = new SearchEngine(indexDir, corpusDir);
 	}
 
 	/**
@@ -94,6 +96,7 @@ public class SearchRunner {
 				List<SearchResult> result = engine.search(a,
 						ScoringModel.TFIDF, true);
 				//
+				
 				String i = id + ":{";
 				int c = 0;
 				for (SearchResult searchResult : result) {
@@ -101,7 +104,7 @@ public class SearchRunner {
 					if (c > 10)
 						break;
 					i += searchResult.getDocumentName() + "#"
-							+ searchResult.getRelevancy();
+							+ searchResult.getRelevancy()+", ";
 				}
 				i += "}";
 				res.add(i);

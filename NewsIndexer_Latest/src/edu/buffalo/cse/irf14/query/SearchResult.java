@@ -11,10 +11,9 @@ public class SearchResult {
 
 	private String documentName;
 	private int documentLength;
-	private int rank;
 	private String title;
 	private String snippet;
-	private float relevancy;
+	private double relevancy;
 
 	public String getDocumentName() {
 		return documentName;
@@ -30,14 +29,6 @@ public class SearchResult {
 
 	public void setDocumentLength(int documentLength) {
 		this.documentLength = documentLength;
-	}
-
-	public int getRank() {
-		return rank;
-	}
-
-	public void setRank(int rank) {
-		this.rank = rank;
 	}
 
 	public String getTitle() {
@@ -56,11 +47,11 @@ public class SearchResult {
 		this.snippet = snippet;
 	}
 
-	public float getRelevancy() {
+	public double getRelevancy() {
 		return relevancy;
 	}
 
-	public void setRelevancy(float relevancy) {
+	public void setRelevancy(double relevancy) {
 		this.relevancy = relevancy;
 	}
 }
