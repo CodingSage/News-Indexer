@@ -1,7 +1,10 @@
 package edu.buffalo.cse.irf14.query;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -57,10 +60,31 @@ public class SearchEngine {
 		}
 	}
 
-	public List<SearchResult> search(Query query, ScoringModel model) {
+	public List<SearchResult> search(Query query, ScoringModel model, boolean fastSearch) {
 		Map<String, List<DocumentInfo>> terms = getTermDocuments(query);
 		List<DocumentInfo> d = evaluateQuery(query.getQuery(), terms);
-		return null;
+		List<SearchResult> res = getSnippets(corpusPath, d);
+		return res;
+	}
+	
+	private List<SearchResult> getSnippets(String corpusPath, List<DocumentInfo> infos){
+		List<SearchResult> res = new ArrayList<SearchResult>();
+		for (DocumentInfo info : infos) {
+			String id = info.getId();
+			SearchResult search = new SearchResult();
+			try {
+				BufferedReader reader = new BufferedReader(new FileReader(corpusPath+File.separator+id));
+				search.setTitle(reader.readLine());
+				search.setDocumentName(id);
+				search.setDocumentLength(global.getDocumentLength(id));
+				
+				//TODO: snippet generation, many terms to be searched in case of dynamic
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}				
+		return res;
 	}
 	
 	private List<DocumentInfo> evaluateQuery(ExpressionNode node, Map<String, List<DocumentInfo>> map){
@@ -135,9 +159,12 @@ public class SearchEngine {
 			extractLeaves(query.getQuery(), termList, indexType);
 			LoadReader(indexPath, indexType.toString());
 			for (String term : termList) {
-				if (result.containsKey(indexType + ":" + term))
+				String termStr = term; 
+				if(term.startsWith("~"))
+					termStr = termStr.substring(1);
+				if (result.containsKey(indexType + ":" + termStr))
 					continue;
-				Integer id = dictionary.getId(term);
+				Integer id = dictionary.getId(termStr);
 				List<DocumentInfo> postings = index.getPostings(id);
 				result.put(indexType + ":" + term, postings);
 			}
