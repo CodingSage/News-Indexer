@@ -20,6 +20,7 @@ import edu.buffalo.cse.irf14.document.FieldNames;
  */
 public class IndexWriter {
 
+	private IndexData globalData;
 	private Map<String, Index> indexMap;
 	private Map<String, Dictionary> dictionaryMap;
 	private String indexPath;
@@ -34,6 +35,7 @@ public class IndexWriter {
 		indexPath = indexDir;
 		indexMap = new HashMap<String, Index>();
 		dictionaryMap = new HashMap<String, Dictionary>();
+		globalData = new IndexData();
 		for (IndexType type : IndexType.values())
 			indexMap.put(type.toString(), new Index(type));
 		for (IndexType type : IndexType.values())
@@ -53,6 +55,7 @@ public class IndexWriter {
 	 */
 	public void addDocument(Document d) throws IndexerException {
 		String docId = d.getField(FieldNames.FILEID)[0];
+		int docLength = 0;
 		for (FieldNames field : FieldNames.values()) {
 			if(field == FieldNames.FILEID) continue;
 			String[] values = d.getField(field);
@@ -83,11 +86,13 @@ public class IndexWriter {
 						Index index = getIndex(type);
 						index.addRecord(termId, docId, count);
 					}
+					docLength += filteredStream.getTermCount();
 				} catch (TokenizerException e) {
 					e.printStackTrace();
 				}
 			}
 		}
+		globalData.addDocument(docId, docLength);
 	}
 
 	/**
@@ -99,11 +104,18 @@ public class IndexWriter {
 	 */
 	public void close() throws IndexerException {
 		try {
+			FileOutputStream fileOut = new FileOutputStream(indexPath
+					+ File.separator + "global");
+			ObjectOutputStream out = new ObjectOutputStream(fileOut);
+			out.writeObject(globalData);
+			out.close();
+			fileOut.close();
+			
 			for (IndexType type : IndexType.values()) {
 				Index index = getIndex(type);
-				FileOutputStream fileOut = new FileOutputStream(indexPath
+				fileOut = new FileOutputStream(indexPath
 						+ File.separator + "i_" + index.getType());
-				ObjectOutputStream out = new ObjectOutputStream(fileOut);
+				out = new ObjectOutputStream(fileOut);
 				out.writeObject(index);
 				out.close();
 				fileOut.close();
@@ -111,9 +123,9 @@ public class IndexWriter {
 
 			for (IndexType type : IndexType.values()) {
 				Dictionary dictionary = getDictionary(type);
-				FileOutputStream fileOut = new FileOutputStream(indexPath
+				fileOut = new FileOutputStream(indexPath
 						+ File.separator + "d_" + dictionary.getType());
-				ObjectOutputStream out = new ObjectOutputStream(fileOut);
+				out = new ObjectOutputStream(fileOut);
 				out.writeObject(dictionary);
 				out.close();
 				fileOut.close();

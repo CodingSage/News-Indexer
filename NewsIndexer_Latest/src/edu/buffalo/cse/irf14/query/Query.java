@@ -16,18 +16,15 @@ public class Query {
 		this.query = queryNode;
 	}
 
+	public ExpressionNode getQuery() {
+		return query;
+	}
+
 	/**
 	 * Method to convert given parsed query into string
 	 */
 	public String toString() {
-		StringBuilder str;
-		if (query.toString().startsWith("[")) {
-			str = new StringBuilder(query.toString());
-			str.replace(0, 1, "{");
-			str.replace(str.length() - 1, str.length(), "}");
-		} else {
-			str = new StringBuilder("{ " + query + " }");
-		}
-		return str.toString();
+		String str = query.toString();
+		return "{ " + str + " }";
 	}
 }

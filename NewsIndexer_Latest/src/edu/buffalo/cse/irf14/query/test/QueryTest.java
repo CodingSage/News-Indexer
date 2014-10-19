@@ -131,7 +131,7 @@ public class QueryTest {
 	@Test
 	public void test_6() {
 		String queryString = "Author:rushdie NOT jihad";
-		Query query = QueryParser.parse(queryString, "AND");
+		Query query = QueryParser.parse(queryString, "OR");
 		assertEquals("{ Author:rushdie AND <Term:jihad> }", query.toString());
 	}
 	

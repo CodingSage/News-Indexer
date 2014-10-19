@@ -30,7 +30,8 @@ public class QueryParser {
 	// TODO Refactor: clean this, repetition of cases
 	private static ExpressionNode evaluateQuery(String query) {
 		query = query.trim();
-		String[] parts = query.split(" ");
+		//reference: http://stackoverflow.com/questions/21627866/java-regex-to-split-a-string-using-spaces-but-not-considering-double-quotes-or
+		String[] parts = query.split(" (?=(([^'\"]*['\"]){2})*[^'\"]*$)");
 		int j = 0, index = 0;
 		if (query.startsWith("(")) {
 			while (!parts[j].endsWith(")")) {
@@ -51,7 +52,8 @@ public class QueryParser {
 					index += parts[j].length() + 1;
 					j++;
 				}
-				return new ExpressionNode(default_Operator, evaluateQuery(query.substring(0, index - 1)), 
+				String op = parts[j+1].toLowerCase().equals("not") ? "AND" : default_Operator;
+				return new ExpressionNode(op, evaluateQuery(query.substring(0, index - 1)), 
 						evaluateQuery(query.substring(index, query.length())));
 			}
 		}
@@ -71,14 +73,15 @@ public class QueryParser {
 		if (j == parts.length) {
 			j = index = 0;
 			index += parts[j].length() + 1;
-			j++;
+			j++;			
 			if (parts[j - 1].toLowerCase().equals("not")) {
 				index += parts[j].length() + 1;
 				j++;
 			}
+			String op = parts[j].toLowerCase().equals("not") ? "AND" : default_Operator;
 			String left = query.substring(0, index - 1);
 			String right = query.substring(index, query.length());
-			return new ExpressionNode(default_Operator, evaluateQuery(left), evaluateQuery(right));
+			return new ExpressionNode(op, evaluateQuery(left), evaluateQuery(right));
 		}
 		if (index == 0 && j == 0) {
 			if (parts[j].startsWith("(")) {

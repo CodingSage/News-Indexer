@@ -13,6 +13,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import edu.buffalo.cse.irf14.query.Query;
+import edu.buffalo.cse.irf14.query.SearchResult;
+
 /**
  * @author nikhillo Class that emulates reading data back from a written index
  */
@@ -54,7 +57,6 @@ public class IndexReader {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 	}
 
 	/**

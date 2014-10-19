@@ -7,6 +7,8 @@ import java.util.Map;
 
 import edu.buffalo.cse.irf14.query.Query;
 import edu.buffalo.cse.irf14.query.QueryParser;
+import edu.buffalo.cse.irf14.query.SearchEngine;
+import edu.buffalo.cse.irf14.query.SearchResult;
 
 /**
  * Main class to run the searcher.
@@ -20,6 +22,7 @@ public class SearchRunner {
 	private PrintStream stream;
 	private String indexPath;
 	private String corpusPath;
+	private SearchEngine engine;
 	
 	public enum ScoringModel {TFIDF, OKAPI};
 	
@@ -35,6 +38,7 @@ public class SearchRunner {
 		indexPath = indexDir;
 		corpusPath = corpusDir;
 		this.stream = stream;
+		SearchEngine engine = new SearchEngine(indexDir, corpusDir);
 	}
 	
 	/**
@@ -43,7 +47,10 @@ public class SearchRunner {
 	 * @param model : Scoring Model to use for ranking results
 	 */
 	public void query(String userQuery, ScoringModel model) {
-		Query query = QueryParser.parse(userQuery, DEFAULT_OPERATOR);		
+		long startTime = System.currentTimeMillis();
+		Query query = QueryParser.parse(userQuery, DEFAULT_OPERATOR);
+		List<SearchResult> results = engine.search(query, model);
+		long duration = startTime - System.currentTimeMillis();
 	}
 	
 	/**
@@ -51,7 +58,7 @@ public class SearchRunner {
 	 * @param queryFile : The file from which queries are to be read and executed
 	 */
 	public void query(File queryFile) {
-		//TODO: IMPLEMENT THIS METHOD
+		
 	}
 	
 	/**

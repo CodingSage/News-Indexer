@@ -15,6 +15,11 @@ public class DocumentInfo implements Comparable<DocumentInfo>, Serializable {
 		this.id = id;
 		this.count = count;
 	}
+	
+	public DocumentInfo(String id, int count, String snippet) {
+		this.id = id;
+		this.count = count;
+	}
 
 	public String getId() {
 		return id;
