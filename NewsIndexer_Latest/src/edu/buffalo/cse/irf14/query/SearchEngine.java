@@ -31,7 +31,7 @@ public class SearchEngine {
 		indexPath = indexDir;
 		corpusPath = corpusDir;
 		try {
-			FileInputStream fileIn = new FileInputStream(indexDir + "global");
+			FileInputStream fileIn = new FileInputStream(indexDir + File.separator + "global");
 			ObjectInputStream in = new ObjectInputStream(fileIn);
 			global = (IndexData) in.readObject();
 			in.close();
@@ -63,14 +63,11 @@ public class SearchEngine {
 
 	public List<SearchResult> search(Query query, ScoringModel model, boolean fastSearch) {
 		Map<String, List<DocumentInfo>> terms = getTermDocuments(query);
-		List<SearchResult> relevanceResult=null;
+		List<SearchResult> relevanceResult = null;
 		System.out.println("Postings for terms is :\n"+terms);
 		List<DocumentInfo> d = evaluateQuery(query.getQuery(), terms);
-		System.out.println("Evaluate Query : "+d);
-		if(d==null)
-			System.out.println("Evaluate query returned null");
-		//relevanceResult=calculateRelevanceOkapi(d,terms);
-		//Collections.sort(relevanceResult,new SearchResultComparator());
+		relevanceResult = calculateRelevanceOkapi(d,terms);
+		Collections.sort(relevanceResult,new SearchResultComparator());
 		//List<SearchResult> res = getSnippets(corpusPath, d);
 		return relevanceResult;
 	}
@@ -240,7 +237,9 @@ public class SearchEngine {
 	}
 	
 	private List<DocumentInfo> evaluateQuery(ExpressionNode node, Map<String, List<DocumentInfo>> map){
-		if(node.left==null && node.right == null)
+		if(node == null)
+			return new ArrayList<DocumentInfo>();
+		if(node.left == null || node.right == null)
 			return map.get(node.index.toUpperCase() + ":" + node.value);			
 		if(node.left.left == null && node.right.right == null){
 			List<DocumentInfo> a = map.get(node.left.index.toUpperCase() + ":" + node.left.value);
@@ -266,10 +265,8 @@ public class SearchEngine {
 	
 	private List<DocumentInfo> and(List<DocumentInfo> a, List<DocumentInfo> b){
 		List<DocumentInfo> small, big, res = new ArrayList<DocumentInfo>();
-		if(a==null)
-			System.out.println("a is null");
-		if(b==null)
-			System.out.println("b is null");
+		if(a == null || b == null)
+			return res;
 		if(a.size() > b.size()){
 			small = b;
 			big = a;
@@ -285,11 +282,11 @@ public class SearchEngine {
 	}
 	
 	private List<DocumentInfo> or(List<DocumentInfo> a, List<DocumentInfo> b){
+		if(a == null)
+			return b;
+		if(b == null)
+			return a;
 		List<DocumentInfo> small, big;
-		if(a==null)
-			System.out.println("a is null");
-		if(b==null)
-			System.out.println("b is null");
 		if(a.size() > b.size()){
 			small = b;
 			big = a;
@@ -306,6 +303,10 @@ public class SearchEngine {
 	}
 
 	private List<DocumentInfo> and_not(List<DocumentInfo> a, List<DocumentInfo> nb){
+		if(a == null)
+			return new ArrayList<DocumentInfo>();
+		if(nb == null)
+			return a;
 		List<DocumentInfo> res = new ArrayList<DocumentInfo>(a);
 		for (DocumentInfo i : nb) {
 			if(a.contains(i))

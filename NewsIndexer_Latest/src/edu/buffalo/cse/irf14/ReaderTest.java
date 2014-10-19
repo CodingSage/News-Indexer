@@ -9,11 +9,11 @@ import edu.buffalo.cse.irf14.index.IndexType;
 public class ReaderTest {
 
 	public static void main(String[] args) {
-		String indexDir="F:\\UB Classes\\IR\\Index\\";
-		String corpusDir="F:\\UB Classes\\IR\\Flat Index\\";
+		String indexDir="C:\\Users\\Vinayak\\Desktop\\CourseWork\\Information Retrieval\\Project 1\\Indexes";
+		String corpusDir="C:\\Users\\Vinayak\\Desktop\\CourseWork\\Information Retrieval\\Project 1\\news_collection";
 		char mode='E';
 		SearchRunner sr=new SearchRunner(indexDir, corpusDir, mode, System.out);
-		File queryFile=new File("F:\\UB Classes\\IR\\queryFile.txt");
+		File queryFile=new File("C:\\Users\\Vinayak\\Desktop\\CourseWork\\Information Retrieval\\Project 1\\test\\query.txt");
 		sr.query(queryFile);
 
 	}

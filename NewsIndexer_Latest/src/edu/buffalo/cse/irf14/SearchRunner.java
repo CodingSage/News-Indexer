@@ -80,22 +80,23 @@ public class SearchRunner {
 	 */
 	public void query(File queryFile) {
 		try {
-			BufferedReader reader = new BufferedReader(
-					new FileReader(queryFile));
+			BufferedReader reader = new BufferedReader(new FileReader(queryFile));
 			String line = reader.readLine();
 			int count = Integer.parseInt(line.split("=")[1]);
 			List<String> res = new ArrayList<String>();
 			while (count != 0) {
 				count--;
 				String query = reader.readLine();
+				query.trim();
+				if(query == "")
+					continue;
 				String id = query.split(":")[0];
 				String q = query.split(":")[1];
 				q = q.substring(1, q.length() - 1);
-				// TODO check the scoring model
+
 				Query a = QueryParser.parse(q, DEFAULT_OPERATOR);
 				List<SearchResult> result = engine.search(a,
 						ScoringModel.TFIDF, true);
-				//
 				
 				String i = id + ":{";
 				int c = 0;
@@ -115,6 +116,7 @@ public class SearchRunner {
 				l += "\n" + string;
 			}
 			stream.write(l.getBytes());
+			reader.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
