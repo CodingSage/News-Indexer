@@ -70,7 +70,7 @@ public class SearchEngine {
 	public List<SearchResult> search(Query query, ScoringModel model,
 			boolean fastSearch) {
 		Map<String, List<DocumentInfo>> terms = getTermDocuments(query);
-		System.out.println("Postings for terms is :\n" + terms);
+		//System.out.println("Postings for terms is :\n" + terms);
 		List<DocumentInfo> d = evaluateQuery(query.getQuery(), terms);
 		List<SearchResult> relevanceResult;
 		if (model == ScoringModel.OKAPI)
@@ -94,7 +94,10 @@ public class SearchEngine {
 		Iterator queryIterator = terms.entrySet().iterator();
 		while (queryIterator.hasNext()) {
 			Map.Entry pairs = (Map.Entry) queryIterator.next();
-			idf[countTerms++] = Math.log10(global.getTotalDocumentCount()
+			if(pairs.getValue() == null)
+				idf[countTerms++] = 0;
+			else
+				idf[countTerms++] = Math.log10(global.getTotalDocumentCount()
 					/ ((ArrayList) pairs.getValue()).size());
 		}
 		int docCount = 0;
@@ -105,11 +108,11 @@ public class SearchEngine {
 			Iterator it = terms.entrySet().iterator();
 			float ans = 0.0f;
 			int sum = 0;
-			while (it.hasNext()) { // Iterating over all terms and their
-									// postings
+			while (it.hasNext()) { 
 				Map.Entry pairs = (Map.Entry) it.next();
-				ArrayList docs = (ArrayList) pairs.getValue(); // Postings of
-																// term
+				ArrayList docs = (ArrayList) pairs.getValue();
+				if(docs == null)
+					continue;
 				for (int i = 0; i < docs.size(); i++) {
 					DocumentInfo doc = (DocumentInfo) docs.get(i);
 					if (info.getId().equals(doc.getId())) {
@@ -136,6 +139,8 @@ public class SearchEngine {
 				Map.Entry pairs = (Map.Entry) it.next();
 				ArrayList docs = (ArrayList) pairs.getValue(); // Postings of
 																// term
+				if(docs == null)
+					continue;
 				for (int i = 0; i < docs.size(); i++) {
 					DocumentInfo doc = (DocumentInfo) docs.get(i);
 					if (info.getId().equals(doc.getId())) {
@@ -172,7 +177,10 @@ public class SearchEngine {
 		Iterator queryIterator = terms.entrySet().iterator();
 		while (queryIterator.hasNext()) {
 			Map.Entry pairs = (Map.Entry) queryIterator.next();
-			idf[countTerms++] = Math.log10(global.getTotalDocumentCount()
+			if(pairs.getValue() == null)
+				idf[countTerms++] = 0;
+			else
+				idf[countTerms++] = Math.log10(global.getTotalDocumentCount()
 					/ ((ArrayList) pairs.getValue()).size());
 		}
 
@@ -224,7 +232,7 @@ public class SearchEngine {
 	}
 
 	private void getSnippets(String corpusPath, List<SearchResult> infos) {
-		int snippetSize = 10;
+		int snippetSize = 5;
 		for (SearchResult search : infos) {
 			try {
 				BufferedReader reader = new BufferedReader(new FileReader(
@@ -233,6 +241,7 @@ public class SearchEngine {
 				String snippet = "";
 				for (int i = 0; i < snippetSize; i++)
 					snippet += reader.readLine();
+				snippet += "...";
 				search.setSnippet(snippet);
 				reader.close();
 			} catch (Exception e) {

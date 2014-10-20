@@ -24,7 +24,14 @@ public class Query {
 	 * Method to convert given parsed query into string
 	 */
 	public String toString() {
-		String str = query.toString();
-		return "{ " + str + " }";
+		StringBuilder str;
+		if (query.toString().startsWith("[")) {
+			str = new StringBuilder(query.toString());
+			str.replace(0, 1, "{");
+			str.replace(str.length() - 1, str.length(), "}");
+		} else {
+			str = new StringBuilder("{ " + query + " }");
+		}
+		return str.toString();
 	}
 }

@@ -5,7 +5,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.PrintStream;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -68,8 +70,15 @@ public class SearchRunner {
 		long startTime = System.currentTimeMillis();
 		Query query = QueryParser.parse(userQuery, DEFAULT_OPERATOR);
 		List<SearchResult> results = engine.search(query, model, false);
-		long duration = startTime - System.currentTimeMillis();
+		long duration = System.currentTimeMillis() - startTime;
 		// write to stream
+		stream.println("Time duration:" + duration);
+		for (SearchResult result : results) {
+			stream.println("-----------------------------------------");
+			stream.println("File: " + result.getDocumentName());
+			stream.println(result.getTitle());
+			stream.println(result.getSnippet());
+		}
 	}
 
 	/**
@@ -99,23 +108,27 @@ public class SearchRunner {
 						ScoringModel.TFIDF, true);
 				
 				String i = id + ":{";
+				DecimalFormat dformat = new DecimalFormat("#.#####");
 				int c = 0;
 				for (SearchResult searchResult : result) {
+					String str = dformat.format(searchResult.getRelevancy());
+					if(Double.isNaN(searchResult.getRelevancy()))
+						continue;
 					c++;
 					if (c > 10)
 						break;
 					i += searchResult.getDocumentName() + "#"
-							+ searchResult.getRelevancy()+", ";
+							+ str+", ";
 				}
+				if(result.size() != 0)
+					i = i.substring(0, i.length() - 2);
 				i += "}";
 				res.add(i);
 			}
-			// TODO check the file write
-			String l = "numResults=" + res.size();
+			stream.print("numResults=" + res.size() + "\n");
 			for (String string : res) {
-				l += "\n" + string;
+				stream.println(string);
 			}
-			stream.write(l.getBytes());
 			reader.close();
 		} catch (Exception e) {
 			e.printStackTrace();

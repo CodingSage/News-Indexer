@@ -2,6 +2,7 @@ package edu.buffalo.cse.irf14.query.test;
 
 import static org.junit.Assert.*;
 
+import java.io.File;
 import java.io.PrintStream;
 
 import org.junit.Test;
@@ -15,13 +16,17 @@ public class SearchRunnerTest {
 	public void testQueryStringScoringModel() {
 		String indexDir = "C:\\Users\\Vinayak\\Desktop\\CourseWork\\Information Retrieval\\Project 1\\Indexes";
 		String corpusDir = "C:\\Users\\Vinayak\\Desktop\\CourseWork\\Information Retrieval\\Project 1\\news_collection";
-		SearchRunner runner = new SearchRunner(indexDir, corpusDir, 'Q', null);
-		runner.query("category:coffee", ScoringModel.TFIDF);
+		SearchRunner runner = new SearchRunner(indexDir, corpusDir, 'Q', System.out);
+		runner.query("category:coffee beans", ScoringModel.TFIDF);
 	}
 
 	@Test
 	public void testQueryFile() {
-		assert(true);
+		String indexDir = "C:\\Users\\Vinayak\\Desktop\\CourseWork\\Information Retrieval\\Project 1\\Indexes";
+		String corpusDir = "C:\\Users\\Vinayak\\Desktop\\CourseWork\\Information Retrieval\\Project 1\\news_collection";
+		SearchRunner runner = new SearchRunner(indexDir, corpusDir, 'E', System.out);
+		File file = new File("C:\\Users\\Vinayak\\Desktop\\CourseWork\\Information Retrieval\\Project 1\\test\\query.txt");
+		runner.query(file);
 	}
 
 }
