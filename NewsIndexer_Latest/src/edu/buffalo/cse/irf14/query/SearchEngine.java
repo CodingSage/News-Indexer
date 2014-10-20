@@ -13,6 +13,11 @@ import java.util.List;
 import java.util.Map;
 
 import edu.buffalo.cse.irf14.SearchRunner.ScoringModel;
+import edu.buffalo.cse.irf14.analysis.Analyzer;
+import edu.buffalo.cse.irf14.analysis.AnalyzerFactory;
+import edu.buffalo.cse.irf14.analysis.TokenStream;
+import edu.buffalo.cse.irf14.analysis.TokenizerException;
+import edu.buffalo.cse.irf14.document.FieldNames;
 import edu.buffalo.cse.irf14.index.Dictionary;
 import edu.buffalo.cse.irf14.index.DocumentInfo;
 import edu.buffalo.cse.irf14.index.Index;
@@ -63,10 +68,9 @@ public class SearchEngine {
 
 	public List<SearchResult> search(Query query, ScoringModel model, boolean fastSearch) {
 		Map<String, List<DocumentInfo>> terms = getTermDocuments(query);
-		List<SearchResult> relevanceResult = null;
 		System.out.println("Postings for terms is :\n"+terms);
 		List<DocumentInfo> d = evaluateQuery(query.getQuery(), terms);
-		relevanceResult = calculateRelevanceOkapi(d,terms);
+		List<SearchResult> relevanceResult = calculateRelevanceOkapi(d,terms);
 		Collections.sort(relevanceResult,new SearchResultComparator());
 		//List<SearchResult> res = getSnippets(corpusPath, d);
 		return relevanceResult;
@@ -228,7 +232,7 @@ public class SearchEngine {
 				search.setDocumentLength(global.getDocumentLength(id));
 				
 				//TODO: snippet generation, many terms to be searched in case of dynamic
-				
+				reader.close();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -239,8 +243,12 @@ public class SearchEngine {
 	private List<DocumentInfo> evaluateQuery(ExpressionNode node, Map<String, List<DocumentInfo>> map){
 		if(node == null)
 			return new ArrayList<DocumentInfo>();
-		if(node.left == null || node.right == null)
-			return map.get(node.index.toUpperCase() + ":" + node.value);			
+		if(node.left == null || node.right == null){
+			List<DocumentInfo> list = map.get(node.index.toUpperCase() + ":" + node.value);
+			if(list == null)
+				return new ArrayList<DocumentInfo>();
+			return list;
+		}						
 		if(node.left.left == null && node.right.right == null){
 			List<DocumentInfo> a = map.get(node.left.index.toUpperCase() + ":" + node.left.value);
 			List<DocumentInfo> b = map.get(node.right.index.toUpperCase() + ":" + node.right.value);
@@ -317,12 +325,12 @@ public class SearchEngine {
 
 	private Map<String, List<DocumentInfo>> getTermDocuments(Query query) {
 		Map<String, List<DocumentInfo>> result = new HashMap<String, List<DocumentInfo>>();
-		for (IndexType indexType : IndexType.values()) {
+		for (IndexType indexType : IndexType.values()) {			
 			List<String> termList = new ArrayList<String>();
 			extractLeaves(query.getQuery(), termList, indexType);
-			LoadReader(indexPath, indexType.toString());
+			LoadReader(indexPath, indexType.toString().toUpperCase());
 			for (String term : termList) {
-				String termStr = term; 
+				String termStr = filter(term, indexType); 
 				if(term.startsWith("~"))
 					termStr = termStr.substring(1);
 				if (result.containsKey(indexType + ":" + termStr))
@@ -333,6 +341,38 @@ public class SearchEngine {
 			}
 		}
 		return result;
+	}
+
+	private String filter(String term, IndexType indexType) {
+		TokenStream stream = new TokenStream(term);
+		String res = "";
+		Analyzer analyzer;
+		AnalyzerFactory factory = AnalyzerFactory.getInstance();
+		switch (indexType) {
+		case AUTHOR:
+			analyzer = factory.getAnalyzerForField(FieldNames.AUTHOR, stream);
+			break;
+		case CATEGORY:
+			analyzer = factory.getAnalyzerForField(FieldNames.CATEGORY, stream);
+			break;
+		case PLACE:
+			analyzer = factory.getAnalyzerForField(FieldNames.PLACE, stream);
+			break;
+		default:
+			analyzer = factory.getAnalyzerForField(FieldNames.CONTENT, stream);
+			break;
+		}
+		try {
+			while(analyzer.increment()){}
+			stream = analyzer.getStream();
+			stream.reset();
+			while(stream.hasNext())
+				res += stream.next().toString() + " ";
+		} catch (TokenizerException e) {
+			e.printStackTrace();
+		}
+		res = res.trim();
+		return res;
 	}
 
 	private void extractLeaves(ExpressionNode node, List<String> termList,

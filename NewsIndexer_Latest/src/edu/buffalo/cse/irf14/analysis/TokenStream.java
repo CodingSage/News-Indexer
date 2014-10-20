@@ -28,6 +28,13 @@ public class TokenStream implements Iterator<Token> {
 		index = elementRemoved = -1;
 		tokens = new ArrayList<Token>(tokenList);
 	}
+	
+	public TokenStream(String term) {
+		Token token = new Token(term);
+		index = elementRemoved = -1;
+		tokens = new ArrayList<Token>();
+		tokens.add(token);
+	}
 
 	/**
 	 * Method that checks if there is any Token left in the stream with regards
