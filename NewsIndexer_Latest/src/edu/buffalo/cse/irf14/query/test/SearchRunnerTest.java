@@ -16,7 +16,7 @@ public class SearchRunnerTest {
 		String indexDir = "C:\\Users\\Vinayak\\Desktop\\CourseWork\\Information Retrieval\\Project 1\\Indexes";
 		String corpusDir = "C:\\Users\\Vinayak\\Desktop\\CourseWork\\Information Retrieval\\Project 1\\news_collection";
 		SearchRunner runner = new SearchRunner(indexDir, corpusDir, 'Q', null);
-		runner.query("place:washington AND federal treasury", ScoringModel.TFIDF);
+		runner.query("category:coffee", ScoringModel.TFIDF);
 	}
 
 	@Test
