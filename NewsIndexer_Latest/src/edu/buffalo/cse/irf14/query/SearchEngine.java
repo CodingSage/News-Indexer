@@ -70,7 +70,7 @@ public class SearchEngine {
 	public List<SearchResult> search(Query query, ScoringModel model,
 			boolean fastSearch) {
 		Map<String, List<DocumentInfo>> terms = getTermDocuments(query);
-		//System.out.println("Postings for terms is :\n" + terms);
+		// System.out.println("Postings for terms is :\n" + terms);
 		List<DocumentInfo> d = evaluateQuery(query.getQuery(), terms);
 		List<SearchResult> relevanceResult;
 		if (model == ScoringModel.OKAPI)
@@ -78,7 +78,7 @@ public class SearchEngine {
 		else
 			relevanceResult = calculateRelevance(d, terms);
 		Collections.sort(relevanceResult, new SearchResultComparator());
-		if(!fastSearch)
+		if (!fastSearch)
 			getSnippets(corpusPath, relevanceResult);
 		return relevanceResult;
 	}
@@ -92,13 +92,15 @@ public class SearchEngine {
 		int countTerms = 0;
 
 		Iterator queryIterator = terms.entrySet().iterator();
-		while (queryIterator.hasNext()) {
+		while (queryIterator.hasNext()) { // To calculate idf of each term in
+											// the query
 			Map.Entry pairs = (Map.Entry) queryIterator.next();
-			if(pairs.getValue() == null)
+			if (pairs.getValue() == null)
 				idf[countTerms++] = 0;
-			else
+			else {
 				idf[countTerms++] = Math.log10(global.getTotalDocumentCount()
-					/ ((ArrayList) pairs.getValue()).size());
+						/ ((ArrayList) pairs.getValue()).size());
+			}
 		}
 		int docCount = 0;
 		for (DocumentInfo info : d) // List of docs in the final result of
@@ -108,16 +110,15 @@ public class SearchEngine {
 			Iterator it = terms.entrySet().iterator();
 			float ans = 0.0f;
 			int sum = 0;
-			while (it.hasNext()) { 
+			while (it.hasNext()) {
 				Map.Entry pairs = (Map.Entry) it.next();
 				ArrayList docs = (ArrayList) pairs.getValue();
-				if(docs == null)
+				if (docs == null)
 					continue;
 				for (int i = 0; i < docs.size(); i++) {
 					DocumentInfo doc = (DocumentInfo) docs.get(i);
-					if (info.getId().equals(doc.getId())) {
+					if (info.getId().equals(doc.getId()))
 						sum = sum + (doc.getCount() * doc.getCount());
-					}
 				}
 			}
 			ans = (float) Math.sqrt(sum);
@@ -139,13 +140,13 @@ public class SearchEngine {
 				Map.Entry pairs = (Map.Entry) it.next();
 				ArrayList docs = (ArrayList) pairs.getValue(); // Postings of
 																// term
-				if(docs == null)
+				if (docs == null)
 					continue;
 				for (int i = 0; i < docs.size(); i++) {
 					DocumentInfo doc = (DocumentInfo) docs.get(i);
 					if (info.getId().equals(doc.getId())) {
 						double temp = doc.getCount() / sumofSquares[count];
-						tempAns += temp * idf[tCount] * idf[tCount];
+						tempAns += temp * idf[tCount]; // * idf[tCount]
 					}
 				}
 				tCount++;
@@ -154,6 +155,16 @@ public class SearchEngine {
 					/ global.getDocumentLength(info.getId());
 			count++;
 		}
+		if(documentScore.length == 0)
+			return res;
+		double max = documentScore[0];
+		for (int z = 0; z < count; z++) {
+			if (documentScore[z] > max)
+				max = documentScore[z];
+		}
+		float a = 0.4f;
+		for (int z = 0; z < count; z++)
+			documentScore[z] = a + (1 - a) * (documentScore[z] / max);
 		int counter = 0;
 		for (DocumentInfo info : d) {
 			String id = info.getId();
@@ -167,7 +178,8 @@ public class SearchEngine {
 		return res;
 	}
 
-	private List<SearchResult> calculateRelevanceOkapi(List<DocumentInfo> d, Map<String, List<DocumentInfo>> terms) {
+	private List<SearchResult> calculateRelevanceOkapi(List<DocumentInfo> d,
+			Map<String, List<DocumentInfo>> terms) {
 		List<SearchResult> res = new ArrayList<SearchResult>();
 		double[] sumofSquares = new double[d.size()];
 		double[] documentScore = new double[d.size()];
@@ -177,17 +189,16 @@ public class SearchEngine {
 		Iterator queryIterator = terms.entrySet().iterator();
 		while (queryIterator.hasNext()) {
 			Map.Entry pairs = (Map.Entry) queryIterator.next();
-			if(pairs.getValue() == null)
+			if (pairs.getValue() == null)
 				idf[countTerms++] = 0;
 			else
 				idf[countTerms++] = Math.log10(global.getTotalDocumentCount()
-					/ ((ArrayList) pairs.getValue()).size());
+						/ ((ArrayList) pairs.getValue()).size());
 		}
 
 		int docCount = 0;
-		System.out.println("OKAPI");
 		for (DocumentInfo info : d) // List of docs in the final result of
-									// boolean expression
+		// boolean expression
 		{
 			// DocId in the result
 			Iterator it = terms.entrySet().iterator();
@@ -198,10 +209,10 @@ public class SearchEngine {
 			double b = 0.75;
 			double average = global.getAverageDocumentLength();
 			while (it.hasNext()) { // Iterating over all terms and their
-									// postings
+				// postings
 				Map.Entry pairs = (Map.Entry) it.next();
 				ArrayList docs = (ArrayList) pairs.getValue(); // Postings of
-																// term
+				// term
 				for (int i = 0; i < docs.size(); i++) {
 					DocumentInfo doc = (DocumentInfo) docs.get(i);
 					if (info.getId().equals(doc.getId())) {
@@ -220,13 +231,27 @@ public class SearchEngine {
 				count++;
 			}
 			documentScore[docCount] = sum;
+			docCount++;
+		}
+		if(documentScore.length == 0)
+			return res;
+		double max = documentScore[0];
+		for (int z = 0; z < docCount; z++) {
+			if (documentScore[z] > max)
+				max = documentScore[z];
+		}
+		float a = 0.4f;
+		for (int z = 0; z < docCount; z++)
+			documentScore[z] = a + (1 - a) * (documentScore[z] / max);
+		int counter = 0;
+		for (DocumentInfo info : d) {
 			String id = info.getId();
 			SearchResult search = new SearchResult();
 			search.setDocumentName(id);
 			search.setDocumentLength(global.getDocumentLength(id));
-			search.setRelevancy(documentScore[docCount]);
+			search.setRelevancy(documentScore[counter]);
+			counter++;
 			res.add(search);
-			docCount++;
 		}
 		return res;
 	}
@@ -364,6 +389,8 @@ public class SearchEngine {
 	}
 
 	private String filter(String term, IndexType indexType) {
+		if(indexType == IndexType.PLACE)
+			term = term.toUpperCase();
 		TokenStream stream = new TokenStream(term);
 		String res = "";
 		Analyzer analyzer;

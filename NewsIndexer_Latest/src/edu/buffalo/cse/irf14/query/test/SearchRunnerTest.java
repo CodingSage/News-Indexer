@@ -11,6 +11,14 @@ import edu.buffalo.cse.irf14.SearchRunner;
 import edu.buffalo.cse.irf14.SearchRunner.ScoringModel;
 
 public class SearchRunnerTest {
+	
+	@Test
+	public void testQueryPhrase() {
+		String indexDir = "C:\\Users\\Vinayak\\Desktop\\CourseWork\\Information Retrieval\\Project 1\\Indexes";
+		String corpusDir = "C:\\Users\\Vinayak\\Desktop\\CourseWork\\Information Retrieval\\Project 1\\news_collection";
+		SearchRunner runner = new SearchRunner(indexDir, corpusDir, 'Q', System.out);
+		runner.query("\"Net profit\"", ScoringModel.TFIDF);
+	}
 
 	@Test
 	public void testQueryStringScoringModel() {

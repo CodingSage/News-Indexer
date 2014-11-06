@@ -148,5 +148,12 @@ public class QueryTest {
 		Query query = QueryParser.parse(queryString, "AND");
 		assertEquals("{ [ Term:Love AND <Term:War> ] AND [ Category:movies AND <Category:crime> ] }", query.toString());
 	}
+	
+	@Test
+	public void test_9() {
+		String queryString = "Category:oil AND place:Dubai AND ( price OR cost )";
+		String query = QueryParser.normalizeQuery(queryString, "");
+		assertEquals("Category:oil AND place:Dubai AND (Term:price OR Term:cost)", query);
+	}
 
 }

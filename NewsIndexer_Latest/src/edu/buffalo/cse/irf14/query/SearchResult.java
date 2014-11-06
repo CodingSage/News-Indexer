@@ -48,6 +48,8 @@ public class SearchResult {
 	}
 
 	public double getRelevancy() {
+		if(Double.isNaN(relevancy))
+			return 0;
 		return relevancy;
 	}
 

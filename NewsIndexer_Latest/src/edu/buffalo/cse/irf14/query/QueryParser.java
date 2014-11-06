@@ -114,7 +114,7 @@ public class QueryParser {
 				countb++;
 				s = s.substring(0, s.length() - 1);
 			}
-			if (s.startsWith("\"")) {
+			if (s.startsWith("\"") && !s.equals("")) {
 				int j = index;
 				while (!str[j].endsWith("\"")) {
 					if(str[j].equals("")){
@@ -128,11 +128,11 @@ public class QueryParser {
 				s += " " + str[j];
 				str[j] = "";
 			}
-			if (!s.contains(":") && !isOperator(s) && !s.toLowerCase().equals("not")) {
+			if (!s.contains(":") && !isOperator(s) && !s.toLowerCase().equals("not") && !s.equals("")) {
 				String i = indexName == "" ? DEFAULT_INDEX : indexName;
 				s = i + ":" + s;
 			}
-			if (s.contains(":(")) {
+			if (s.contains(":(") && !s.equals("")) {
 				int j = index + 1;
 				int indexPartition = s.indexOf(':');
 				String sindex = s.substring(0, indexPartition);
@@ -148,13 +148,14 @@ public class QueryParser {
 			}
 			while (countf != 0) {
 				countf--;
-				s = "(" + s;
+				s = "(" + s.trim();
 			}
 			while (countb != 0) {
 				countb--;
+				s = s.trim();
 				s += ")";
 			}
-			if (query != "" && s != "")
+			if (query != "" && !s.equals("") && !query.endsWith("(") && !s.equals(")"))
 				query += " ";
 			query += s;
 		}

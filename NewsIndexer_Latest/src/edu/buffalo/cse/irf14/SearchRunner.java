@@ -72,8 +72,12 @@ public class SearchRunner {
 		List<SearchResult> results = engine.search(query, model, false);
 		long duration = System.currentTimeMillis() - startTime;
 		// write to stream
+		int count = 0;
 		stream.println("Time duration:" + duration);
 		for (SearchResult result : results) {
+			count++;
+			if(count > 10)
+				break;
 			stream.println("-----------------------------------------");
 			stream.println("File: " + result.getDocumentName());
 			stream.println(result.getTitle());
@@ -100,8 +104,8 @@ public class SearchRunner {
 				if(query == "")
 					continue;
 				String id = query.split(":")[0];
-				String q = query.split(":")[1];
-				q = q.substring(1, q.length() - 1);
+				int posn = query.indexOf(':') + 2;
+				String q = query.substring(posn, query.length() - 1);
 
 				Query a = QueryParser.parse(q, DEFAULT_OPERATOR);
 				List<SearchResult> result = engine.search(a,
@@ -120,7 +124,7 @@ public class SearchRunner {
 					i += searchResult.getDocumentName() + "#"
 							+ str+", ";
 				}
-				if(result.size() != 0)
+				if(result.size() != 0 && !i.endsWith("{"))
 					i = i.substring(0, i.length() - 2);
 				i += "}";
 				res.add(i);
